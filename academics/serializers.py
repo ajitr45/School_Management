@@ -18,8 +18,6 @@ class SectionSerializer(serializers.ModelSerializer):
         
 class SubjectSerializer(serializers.ModelSerializer):
     
-    school_class = SchoolClassSerializer.StringRelatedField()
-    
     class Meta:
         model = Subject
         fields = "__all__"
