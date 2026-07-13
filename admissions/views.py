@@ -17,18 +17,10 @@ class ApproveAdmissionAPIView(APIView):
 
     def patch(self, request, pk):
 
-        serializer = ApproveAdmissionSerializer(
-            data=request.data
-        )
+        serializer = ApproveAdmissionSerializer(data=request.data)
 
         serializer.is_valid(raise_exception=True)
 
-        data = approve_admission(
-            admission_id=pk,
-            section=serializer.validated_data["section"]
-        )
+        data = approve_admission(admission_id=pk,section=serializer.validated_data["section"])
 
-        return Response(
-            data,
-            status=status.HTTP_200_OK
-        )
+        return Response(data,status=status.HTTP_200_OK)
