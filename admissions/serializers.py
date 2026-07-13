@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from academics.models import Section
 from .models import Admission
 
 class AdmissionSerializer(serializers.ModelSerializer):
@@ -11,3 +12,7 @@ class AdmissionSerializer(serializers.ModelSerializer):
             "status",
             "applied_date"
         ]
+        
+
+class ApproveAdmissionSerializer(serializers.Serializer):
+    section = serializers.PrimaryKeyRelatedField(queryset=Section.objects.all())
