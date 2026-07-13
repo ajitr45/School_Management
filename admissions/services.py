@@ -2,7 +2,8 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404
 from accounts.models import User
 from students.models import Student
-from students.utils import (generate_student_id,generate_roll_number,generate_password)
+from students.utils import generate_student_id,generate_roll_number,generate_password
+from rest_framework.exceptions import ValidationError
 
 from .models import Admission
 
@@ -11,26 +12,23 @@ from .models import Admission
 def approve_admission(admission_id, section):
 
     # Get Admission
-    admission = get_object_or_404(
-        Admission,
-        pk=admission_id
-    )
+    admission = get_object_or_404(Admission,pk=admission_id)
 
     # Check Already Approved
     if admission.status == "APPROVED":
         raise ValueError("Admission is already approved.")
-
-    # Generate Student ID
-    student_id = generate_student_id()
-
-    # Generate Password
-    password = generate_password()
-
-    # Generate Roll Number
-    roll_number = generate_roll_number(
-        admission.applying_class,
-        section
+    
+    # Validate section with the applying class.
+    if section.school_class != admission.applying_class:
+        raise ValidationError(
+        {
+            "section": "Selected section does not belong to the applying class."
+        }
     )
+        
+    student_id = generate_student_id()
+    password = generate_password()
+    roll_number = generate_roll_number(admission.applying_class,section)
 
     # Create User
     user = User.objects.create_user(
