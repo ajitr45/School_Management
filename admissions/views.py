@@ -3,15 +3,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from admissions.models import Admission
-from .serializers import ApproveAdmissionSerializer
+from .serializers import AdmissionSerializer, ApproveAdmissionSerializer
 from .services import approve_admission
 
 
 
-class AdmissionsViewSet(ModelViewSet):
+class AdmissionViewSet(ModelViewSet):
     queryset = Admission.objects.all()
-    serializer_class = ApproveAdmissionSerializer
-
+    serializer_class = AdmissionSerializer
 
 class ApproveAdmissionAPIView(APIView):
 

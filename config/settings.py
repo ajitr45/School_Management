@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'accounts',
     'academics',
     'admissions',
-    'students'
+    'students',
+    'teachers',
     
 ]
 
