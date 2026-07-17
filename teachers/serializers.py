@@ -35,3 +35,45 @@ class TeacherAssignmentSerializer(serializers.ModelSerializer):
         model = TeacherAssignment
 
         fields = "__all__"
+        
+        
+class TeacherListSerializer(serializers.ModelSerializer):
+
+    email = serializers.EmailField(source="user.email",read_only=True)
+
+    class Meta:
+
+        model = Teacher
+
+        fields = [
+            "teacher_id",
+            "full_name",
+            "email",
+            "mobile",
+            "qualification",
+            "experience",
+            "joining_date",
+        ]
+
+
+class TeacherDetailSerializer(serializers.ModelSerializer):
+
+    email = serializers.EmailField(source="user.email",read_only=True)
+
+    class Meta:
+
+        model = Teacher
+
+        fields = [
+            "teacher_id",
+            "full_name",
+            "email",
+            "mobile",
+            "qualification",
+            "experience",
+            "date_of_birth",
+            "gender",
+            "address",
+            "photo",
+            "joining_date",
+        ]
