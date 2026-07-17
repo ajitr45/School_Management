@@ -40,17 +40,11 @@ class TeacherListAPIView(APIView):
 class TeacherDetailAPIView(APIView):
 
     def get(self, request, pk):
+        
+        print("teacher id :", pk)
 
-        teacher = get_object_or_404(
-            Teacher,
-            pk=pk
-        )
+        teacher = get_object_or_404(Teacher,pk=pk)
 
-        serializer = TeacherDetailSerializer(
-            teacher
-        )
+        serializer = TeacherDetailSerializer(teacher)
 
-        return Response(
-            serializer.data,
-            status=status.HTTP_200_OK
-        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
