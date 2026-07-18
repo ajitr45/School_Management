@@ -2,8 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import TeacherSerializer, TeacherAssignmentSerializer, TeacherListSerializer, TeacherDetailSerializer
-from .services import assign_teacher, create_teacher
+from .serializers import TeacherSerializer, TeacherAssignmentSerializer, TeacherListSerializer, TeacherDetailSerializer, TeacherUpdateSerializer
+from .services import assign_teacher, create_teacher, update_teacher
 from .models import Teacher
 
 
@@ -40,11 +40,25 @@ class TeacherListAPIView(APIView):
 class TeacherDetailAPIView(APIView):
 
     def get(self, request, pk):
-        
-        print("teacher id :", pk)
 
-        teacher = get_object_or_404(Teacher,pk=pk)
+        teacher = get_object_or_404(Teacher, pk=pk)
 
         serializer = TeacherDetailSerializer(teacher)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+    def patch(self, request, pk):
+
+        teacher = get_object_or_404(Teacher, pk=pk)
+
+        serializer = TeacherUpdateSerializer(teacher,data=request.data,partial=True)
+
+        serializer.is_valid(raise_exception=True)
+
+        teacher = update_teacher(teacher, serializer.validated_data)
+
+        serializer = TeacherDetailSerializer(teacher)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    

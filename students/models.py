@@ -1,8 +1,8 @@
 from django.db import models
-
 from accounts.models import User
 from admissions.models import Admission
 from academics.models import SchoolClass, Section
+
 
 
 class Student(models.Model):

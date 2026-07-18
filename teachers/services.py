@@ -96,3 +96,13 @@ def assign_teacher(validated_data):
         "message": "Teacher assigned successfully.",
         "assignment_id": assignment.id,
     }
+    
+    
+def update_teacher(teacher, validated_data):
+
+    for field, value in validated_data.items():
+        setattr(teacher, field, value)
+
+    teacher.save()
+
+    return teacher

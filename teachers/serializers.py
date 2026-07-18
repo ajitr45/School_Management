@@ -77,3 +77,19 @@ class TeacherDetailSerializer(serializers.ModelSerializer):
             "photo",
             "joining_date",
         ]
+
+
+class TeacherUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Teacher
+        fields = [
+            "full_name",
+            "mobile",
+            "qualification",
+            "experience",
+            "date_of_birth",
+            "gender",
+            "address",
+            "photo",
+        ]        
