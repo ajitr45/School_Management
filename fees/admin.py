@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import FeeStructure
+from .models import FeeStructure, StudentFee
 
 # Register your models here.
 
@@ -30,3 +30,32 @@ class FeeStructureAdmin(admin.ModelAdmin):
         "school_class",
     )
     
+
+@admin.register(StudentFee)
+
+class StudentFeeAdmin(admin.ModelAdmin):
+    
+    list_display = (
+        "student",
+        "fee_structure",
+        "amount_paid",
+        "status",
+        "payment_date",
+        "receipt_number",
+        
+    )
+    
+    list_filter = (
+        "status",
+        "payment_date",
+        
+    )
+    
+    search_fields = (
+        "student_name",
+        "receipt_number",
+    )
+    
+    ordering = (
+        "-payment_date",
+    )

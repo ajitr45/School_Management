@@ -50,6 +50,14 @@ class StudentFee(models.Model):
     remarks = models.TextField( blank=True, null=True)
     created_at = models.DateTimeField( auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields= ["student", "fee_structure"],
+                name = "unique_student_fee_structure",
+            )
+        ]
 
     def __str__(self):
-        return f"{self.student.full_name} - {self.status}"
+        return f"{self.student.admission.student_name} - {self.fee_structure.academic_year}"
