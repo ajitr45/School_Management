@@ -19,6 +19,8 @@ class FeeStructureSerializer(serializers.ModelSerializer):
     
 
 class StudentFeeSerializer(serializers.ModelSerializer):
+    
+    student_name = serializers.CharField( source="student.admission.student_name", read_only=True,)
 
     class Meta:
         model = StudentFee
