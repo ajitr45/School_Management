@@ -38,26 +38,62 @@ class StudentFee(models.Model):
 
     STATUS_CHOICES = [
         ("PENDING", "Pending"),
+        ("PARTIAL", "Partial"),
         ("PAID", "Paid"),
     ]
 
-    student = models.ForeignKey( Student, on_delete=models.CASCADE, related_name="fees",)
-    fee_structure = models.ForeignKey( FeeStructure, on_delete=models.CASCADE, related_name="student_fees")
-    amount_paid = models.DecimalField( max_digits=10, decimal_places=2, default=0)
-    payment_date = models.DateField( null=True, blank=True)
-    status = models.CharField( max_length=10, choices=STATUS_CHOICES, default="PENDING",)
-    receipt_number = models.CharField( max_length=50, unique=True,)
-    remarks = models.TextField( blank=True, null=True)
-    created_at = models.DateTimeField( auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
+    student = models.ForeignKey( Student,
+        on_delete=models.CASCADE,
+        related_name="student_fees",
+    )
+
+    fee_structure = models.ForeignKey( FeeStructure,
+        on_delete=models.CASCADE,
+        related_name="student_fees",
+    )
+
+    status = models.CharField( max_length=10,
+        choices=STATUS_CHOICES,
+        default="PENDING",
+    )
+
+    assigned_date = models.DateField(auto_now_add=True,)
+    created_at = models.DateTimeField(auto_now_add=True,)
+    updated_at = models.DateTimeField(auto_now=True,)
+
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields= ["student", "fee_structure"],
-                name = "unique_student_fee_structure",
+                fields=["student", "fee_structure"],
+                name="unique_student_fee_structure",
             )
         ]
 
     def __str__(self):
         return f"{self.student.admission.student_name} - {self.fee_structure.academic_year}"
+    
+    
+class FeePayment(models.Model):
+
+    PAYMENT_METHOD_CHOICES = [
+        ("CASH", "Cash"),
+        ("UPI", "UPI"),
+        ("CARD", "Card"),
+    ]
+
+    student_fee = models.ForeignKey( StudentFee,
+        on_delete=models.CASCADE,
+        related_name="payments",
+    )
+
+    amount = models.DecimalField( max_digits=10, decimal_places=2,)
+    payment_method = models.CharField( max_length=10, choices=PAYMENT_METHOD_CHOICES,)
+    payment_date = models.DateField(auto_now_add=True,)
+    receipt_number = models.CharField( max_length=50, unique=True,)
+    transaction_id = models.CharField( max_length=100, blank=True, null=True )
+    remarks = models.TextField( blank=True, null=True,)
+    created_at = models.DateTimeField(auto_now_add=True,)
+    updated_at = models.DateTimeField( auto_now=True,)
+
+    def __str__(self):
+        return f"{self.student_fee.student.admission.student_name} - {self.amount}"

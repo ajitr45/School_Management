@@ -1,61 +1,56 @@
 from django.contrib import admin
-from .models import FeeStructure, StudentFee
-
-# Register your models here.
+from .models import FeeStructure, StudentFee, FeePayment
 
 
 @admin.register(FeeStructure)
 class FeeStructureAdmin(admin.ModelAdmin):
-
     list_display = (
         "school_class",
         "academic_year",
         "amount",
         "due_date",
         "is_active",
-        "created_at",
     )
-
     list_filter = (
         "academic_year",
         "is_active",
     )
-
     search_fields = (
         "school_class__name",
+        "academic_year",
     )
 
-    ordering = (
-        "-academic_year",
-        "school_class",
-    )
-    
 
 @admin.register(StudentFee)
-
 class StudentFeeAdmin(admin.ModelAdmin):
-    
     list_display = (
         "student",
         "fee_structure",
-        "amount_paid",
         "status",
-        "payment_date",
-        "receipt_number",
-        
+        "assigned_date",
     )
-    
     list_filter = (
         "status",
-        "payment_date",
-        
     )
-    
     search_fields = (
-        "student_name",
-        "receipt_number",
+        "student__admission__student_name",
     )
-    
-    ordering = (
-        "-payment_date",
+
+
+@admin.register(FeePayment)
+class FeePaymentAdmin(admin.ModelAdmin):
+    list_display = (
+        "student_fee",
+        "amount",
+        "payment_method",
+        "receipt_number",
+        "payment_date",
+    )
+    list_filter = (
+        "payment_method",
+        "payment_date",
+    )
+    search_fields = (
+        "receipt_number",
+        "student_fee__student__admission__student_name",
     )
