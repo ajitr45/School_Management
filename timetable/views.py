@@ -7,10 +7,8 @@ from rest_framework.views import APIView
 
 from .models import Timetable
 from .serializers import TimetableSerializer
-from .services import (
-    create_timetable,
-    update_timetable,
-)
+from .services import create_timetable, update_timetable
+
 
 
 class TimetableListCreateAPIView(APIView):
