@@ -40,6 +40,7 @@ def create_homework(validate_data):
 
 def update_homework(homework, validated_data):
 
+    # If a field is not provided in PATCH request,use the existing value from the homework object.
     school_class = validated_data.get( "school_class", homework.school_class,)
     section = validated_data.get( "section", homework.section,)
     subject = validated_data.get( "subject", homework.subject,)
