@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'fees',
     'exams',
     'timetable',
+    'homework',
     
     
     
