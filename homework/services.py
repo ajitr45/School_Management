@@ -39,12 +39,11 @@ def create_homework(validate_data):
 
 
 def update_homework(homework, validated_data):
-    
-    school_class = validated_data["school_class"]
-    subject = validated_data["subject"]
-    section = validated_data["section"]
-    due_date = validated_data["due_date"]
-    
+
+    school_class = validated_data.get( "school_class", homework.school_class,)
+    section = validated_data.get( "section", homework.section,)
+    subject = validated_data.get( "subject", homework.subject,)
+    due_date = validated_data.get( "due_date", homework.due_date,)
 
     if section.school_class != school_class:
         raise ValidationError(
