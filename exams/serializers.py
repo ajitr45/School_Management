@@ -11,8 +11,8 @@ class ExamSerializer(serializers.ModelSerializer):
 
 class ExamSubjectSerializer(serializers.ModelSerializer):
 
-    exam_name = serializers.CharField(  source="exam.name", read_only=True )
-    subject_name = serializers.CharField( source="subject.name", read_only=True,)
+    exam_name = serializers.CharField(source="exam.name", read_only=True )
+    subject_name = serializers.CharField(source="subject.name", read_only=True,)
 
     class Meta:
         model = ExamSubject
@@ -28,3 +28,7 @@ class StudentResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentResult
         fields = "__all__"
+        read_only_fields = [
+            "created_at",
+            "updated_at",
+        ]
