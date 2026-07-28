@@ -10,6 +10,6 @@ urlpatterns = [
     path("exam-subjects/", ExamSubjectListCreateAPIView.as_view(), name="exam-subject-list-create"),
     path("exam-subjects/<int:pk>/", ExamSubjectDetailAPIView.as_view(), name="exam-subject-detail"),
     
-    path("student-results/", StudentResultListCreateApiView.as_view(), name="stuent-result-list-create"),
+    path("student-results/", StudentResultListCreateApiView.as_view(), name="student-result-list-create"),
     path("student-results/<int:pk>/", StudentResultDetailAPIView.as_view(), name="student-result-detail"),
 ]
