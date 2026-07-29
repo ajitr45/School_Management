@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Exam, ExamSubject, StudentResult
 from .serializers import  ExamSerializer, ExamSubjectSerializer, StudentResultSerializer
-from .services import created_exam, updated_exam, created_exam_subject, updated_exam_subject, created_student_result,updated_student_result
+from .services import created_exam, updated_exam, created_exam_subject, updated_exam_subject, created_student_result,updated_student_result, generate_report_card
+from .report_serializers import ReportCardSerializer
 
 
 
@@ -160,3 +161,11 @@ class StudentResultDetailAPIView(APIView):
         return Response({"message": "Student Result deleted successfully."},
             status=status.HTTP_204_NO_CONTENT,
         )
+        
+class ReportCardAPIView(APIView):
+
+    def get(self, request, student_id, exam_id):
+
+        report = generate_report_card(student_id,exam_id,)
+        serializer = ReportCardSerializer(report)
+        return Response(serializer.data, status=status.HTTP_200_OK,)

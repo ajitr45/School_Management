@@ -1,5 +1,7 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.exceptions import ValidationError
 from .models import Exam, ExamSubject, StudentResult
+from students.models import Student
 
 
 def created_exam(validated_data):
@@ -83,3 +85,126 @@ def updated_student_result(student_result, validated_data):
 
     student_result.save()
     return student_result
+
+
+def calculate_percentage(obtained_marks, total_marks):
+    if total_marks == 0:
+        return 0
+
+    return round((obtained_marks / total_marks) * 100, 2)
+
+
+def calculate_grade(percentage):
+    if percentage >= 90:
+        return "A+"
+
+    elif percentage >= 80:
+        return "A"
+
+    elif percentage >= 70:
+        return "B"
+
+    elif percentage >= 60:
+        return "C"
+
+    elif percentage >= 33:
+        return "D"
+
+    return "F"
+
+
+def calculate_status(marks_obtained, pass_marks):
+    if marks_obtained >= pass_marks:
+        return "PASS"
+
+    return "FAIL"
+
+
+def calculate_division(percentage):
+    if percentage >= 60:
+        return "First Division"
+
+    elif percentage >= 45:
+        return "Second Division"
+
+    elif percentage >= 33:
+        return "Third Division"
+
+    return "Fail"
+
+
+
+def generate_report_card(student_id, exam_id):
+
+    student = get_object_or_404( Student, id=student_id,)
+
+    exam = get_object_or_404( Exam, id=exam_id )
+
+    results = (StudentResult.objects
+        .filter(
+            student=student,
+            exam_subject__exam=exam,
+        ).select_related(
+            "exam_subject",
+            "exam_subject__subject",
+        )
+    )
+
+    if not results.exists():
+        raise ValueError("No result found.")
+
+    total_marks = 0
+    obtained_marks = 0
+    overall_result = "PASS"
+
+    subjects = []
+
+    for result in results:
+
+        exam_subject = result.exam_subject
+        percentage = calculate_percentage(result.marks_obtained,exam_subject.maximum_marks,)
+        grade = calculate_grade(percentage,)
+        status = calculate_status(result.marks_obtained,exam_subject.pass_marks)
+
+        if status == "FAIL":
+            overall_result = "FAIL"
+
+        total_marks += exam_subject.maximum_marks
+        obtained_marks += result.marks_obtained
+
+        subjects.append({
+            "subject": exam_subject.subject.name,
+            "maximum_marks": exam_subject.maximum_marks,
+            "pass_marks": exam_subject.pass_marks,
+            "marks_obtained": result.marks_obtained,
+            "percentage": percentage,
+            "grade": grade,
+            "status": status,
+            "remarks": result.remarks,
+        })
+
+    overall_percentage = calculate_percentage(obtained_marks,total_marks,)
+
+    return {
+        "student": {
+            "student_id": student.student_id,
+            "student_name": student.admission.student_name,
+            "school_class": student.school_class.name,
+            "section": student.section.name,
+        },
+        "exam": {
+            "exam_name": exam.name,
+            "academic_year": exam.academic_year,
+            "start_date": exam.start_date,
+            "end_date": exam.end_date,
+        },
+        "subjects": subjects,
+        "summary": {
+            "total_marks": total_marks,
+            "obtained_marks": obtained_marks,
+            "percentage": overall_percentage,
+            "grade": calculate_grade(overall_percentage),
+            "division": calculate_division(overall_percentage),
+            "result": overall_result,
+        },
+    }
