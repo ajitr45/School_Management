@@ -45,22 +45,12 @@ class ExamSubject(models.Model):
     
 class StudentResult(models.Model):
 
-    PASS = "PASS"
-    FAIL = "FAIL"
-
-    STATUS_CHOICES = [
-        (PASS, "Pass"),
-        (FAIL, "Fail"),
-    ]
-
     student = models.ForeignKey( Student, on_delete=models.CASCADE, related_name="results",)
-    exam_subject = models.ForeignKey( ExamSubject, on_delete=models.CASCADE, related_name="student_results",)
+    exam_subject = models.ForeignKey(ExamSubject, on_delete=models.CASCADE, related_name="student_results",)
     marks_obtained = models.PositiveIntegerField()
-    grade = models.CharField(max_length=2)
-    status = models.CharField( max_length=10, choices=STATUS_CHOICES )
-    remarks = models.TextField(blank=True, null=True)
+    remarks = models.TextField( blank=True, null=True,)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True,)
 
     class Meta:
         ordering = ["-created_at"]

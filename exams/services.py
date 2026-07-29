@@ -2,12 +2,12 @@ from rest_framework.exceptions import ValidationError
 from .models import Exam, ExamSubject, StudentResult
 
 
-def create_exam(validated_data):
+def created_exam(validated_data):
 
     return Exam.objects.create(**validated_data)
 
 
-def update_exam(exam, validated_data):
+def updated_exam(exam, validated_data):
 
     for attr, value in validated_data.items():
         setattr(exam, attr, value)
@@ -17,7 +17,8 @@ def update_exam(exam, validated_data):
 
 
 
-def create_exam_subject(validated_data):
+def created_exam_subject(validated_data):
+    
 
     if validated_data["pass_marks"] > validated_data["maximum_marks"]:
         raise ValidationError(
@@ -29,7 +30,7 @@ def create_exam_subject(validated_data):
     return ExamSubject.objects.create(**validated_data)
 
 
-def update_exam_subject(exam_subject, validated_data):
+def updated_exam_subject(exam_subject, validated_data):
 
     maximum_marks = validated_data.get( "maximum_marks", exam_subject.maximum_marks,)
     pass_marks = validated_data.get( "pass_marks", exam_subject.pass_marks )
@@ -49,7 +50,7 @@ def update_exam_subject(exam_subject, validated_data):
 
 
 
-def create_student_result(validated_data):
+def created_student_result(validated_data):
 
     exam_subject = validated_data["exam_subject"]
     marks_obtained = validated_data["marks_obtained"]
@@ -64,7 +65,7 @@ def create_student_result(validated_data):
     return StudentResult.objects.create(**validated_data)
 
 
-def update_student_result(student_result, validated_data):
+def updated_student_result(student_result, validated_data):
 
     exam_subject = validated_data.get( "exam_subject", student_result.exam_subject )
 

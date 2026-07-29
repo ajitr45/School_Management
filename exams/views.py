@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Exam, ExamSubject, StudentResult
 from .serializers import  ExamSerializer, ExamSubjectSerializer, StudentResultSerializer
-from .services import create_exam, updated_exam, create_exam_subject, updated_exam_subject, create_student_result,updated_student_result
+from .services import created_exam, updated_exam, created_exam_subject, updated_exam_subject, created_student_result,updated_student_result
 
 
 
@@ -20,7 +20,7 @@ class ExamListCreateApiView(APIView):
 
         serializer = ExamSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        exam = create_exam(serializer.validated_data)
+        exam = created_exam(serializer.validated_data)
         return Response( ExamSerializer(exam).data, status=status.HTTP_201_CREATED,)
 
 
@@ -71,7 +71,7 @@ class ExamSubjectListCreateAPIView(APIView):
 
         serializer = ExamSubjectSerializer(data=request.data,)
         serializer.is_valid(raise_exception=True)
-        exam_subject = create_exam_subject(serializer.validated_data,)
+        exam_subject = created_exam_subject(serializer.validated_data,)
         return Response( ExamSubjectSerializer(exam_subject).data, status=status.HTTP_201_CREATED,)
 
 
@@ -122,7 +122,7 @@ class StudentResultListCreateApiView(APIView):
 
         serializer = StudentResultSerializer(data=request.data,)
         serializer.is_valid(raise_exception=True)
-        student_result = create_student_result(serializer.validated_data,)
+        student_result = created_student_result(serializer.validated_data,)
 
         return Response( StudentResultSerializer(student_result).data, status=status.HTTP_201_CREATED,)
 
