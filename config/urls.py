@@ -13,5 +13,6 @@ urlpatterns = [
     path("api/exams/", include("exams.urls")),
     path("api/timetable/", include("timetable.urls")),
     path("api/homework/", include("homework.urls")),
+    path("api/notices/", include("notices.urls")),
 
     ]
