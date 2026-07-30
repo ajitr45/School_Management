@@ -14,5 +14,6 @@ urlpatterns = [
     path("api/timetable/", include("timetable.urls")),
     path("api/homework/", include("homework.urls")),
     path("api/notices/", include("notices.urls")),
+    path("api/study-materials/", include("study_materials.urls")),
 
     ]
