@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'timetable',
     'homework',
     'notices',
+    'study_materials',
+    
     
     
     
