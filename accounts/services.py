@@ -8,7 +8,7 @@ def login_user(validated_data):
     username = validated_data["username"]
     password = validated_data["password"]
 
-    user = authenticate( username=username, password=password,)
+    user = authenticate(username=username, password=password,)
 
     if user is None:
         raise AuthenticationFailed(
