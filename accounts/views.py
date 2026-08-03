@@ -5,8 +5,9 @@ from .serializers import UserSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import LoginSerializer
-from .services import login_user
+from .serializers import LoginSerializer, LogoutSerializer
+from .services import login_user,logout_user
+from rest_framework.permissions import IsAuthenticated
 
 
 class UserViewSet(ModelViewSet):
@@ -26,6 +27,14 @@ class LoginAPIView(APIView):
         return Response( data, status=status.HTTP_200_OK)   
 
 
+class LogoutAPIView(APIView):
     
+    permission_classes = [IsAuthenticated]
     
+    def post(self, request):
+        
+        serializer = LogoutSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = logout_user(serializer.validated_data)
+        return Response(data, status=status.HTTP_200_OK)    
     
