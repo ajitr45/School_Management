@@ -27,3 +27,12 @@ def login_user(validated_data):
             "role": user.role,
         },
     }
+    
+
+def logout_user(validated_data):
+    
+    refresh_token = validated_data["refresh"]
+    token = RefreshToken(refresh_token)
+    token.blacklist()
+    
+    return { "message": "Logout successful."}
