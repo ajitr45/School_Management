@@ -5,9 +5,12 @@ from rest_framework import status
 from .serializers import TeacherSerializer, TeacherAssignmentSerializer, TeacherListSerializer, TeacherDetailSerializer, TeacherUpdateSerializer
 from .services import assign_teacher, create_teacher, update_teacher
 from .models import Teacher
+from accounts.permissions import IsAdmin
 
 
 class TeacherCreateAPIView(APIView):
+    
+    permission_classes = [IsAdmin]
 
     def post(self, request):
 
@@ -18,11 +21,11 @@ class TeacherCreateAPIView(APIView):
     
     
 class TeacherAssignmentAPIView(APIView):
+    
+    permission_classes = [IsAdmin]
 
     def post(self, request):
-        
-        print(request.data)
-
+    
         serializer = TeacherAssignmentSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = assign_teacher(serializer.validated_data)
@@ -30,6 +33,8 @@ class TeacherAssignmentAPIView(APIView):
     
 
 class TeacherListAPIView(APIView):
+    
+    permission_classes = [IsAdmin]
 
     def get(self, request):
         teachers = Teacher.objects.all()
@@ -38,6 +43,8 @@ class TeacherListAPIView(APIView):
     
 
 class TeacherDetailAPIView(APIView):
+    
+    permission_classes = [IsAdmin]
 
     def get(self, request, pk):
 
