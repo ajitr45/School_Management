@@ -42,22 +42,16 @@ class TeacherDetailAPIView(APIView):
     def get(self, request, pk):
 
         teacher = get_object_or_404(Teacher, pk=pk)
-
         serializer = TeacherDetailSerializer(teacher)
-
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
     def patch(self, request, pk):
 
         teacher = get_object_or_404(Teacher, pk=pk)
-
         serializer = TeacherUpdateSerializer(teacher,data=request.data,partial=True)
-
         serializer.is_valid(raise_exception=True)
-
         teacher = update_teacher(teacher, serializer.validated_data)
-
         serializer = TeacherDetailSerializer(teacher)
 
         return Response(serializer.data, status=status.HTTP_200_OK)

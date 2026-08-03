@@ -1,7 +1,8 @@
+from rest_framework.exceptions import ValidationError
 from django.db import transaction
 from accounts.models import User
 from students.utils import generate_password
-from .models import Teacher
+from .models import Teacher, TeacherAssignment
 from .utils import generate_teacher_id
 
 
@@ -9,14 +10,13 @@ from .utils import generate_teacher_id
 def create_teacher(validated_data):
 
     teacher_id = generate_teacher_id()
-
     password = generate_password()
 
     user = User.objects.create_user(
         username=teacher_id,
         email=validated_data["email"],
         password=password,
-        role="TEACHER"
+        role=User.TEACHER
     )
 
     teacher = Teacher.objects.create(
@@ -40,12 +40,6 @@ def create_teacher(validated_data):
         "password": password,
     }
     
-    
-from django.db import transaction
-
-from rest_framework.exceptions import ValidationError
-
-from .models import TeacherAssignment
 
 
 @transaction.atomic

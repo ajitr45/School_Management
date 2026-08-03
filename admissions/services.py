@@ -35,7 +35,7 @@ def approve_admission(admission_id, section):
         username=student_id,
         email=admission.student_email,
         password=password,
-        role="STUDENT"
+        role=User.STUDENT
     )
 
     # Create Student
