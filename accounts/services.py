@@ -1,7 +1,11 @@
 from django.contrib.auth import authenticate
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken    
 from rest_framework.exceptions import ValidationError as validationError
+from .utils import generate_otp
+from django.core.mail import send_mail
+from django.conf import settings
+from .models import PasswordResetOTP, User
 
 def login_user(validated_data):
 
@@ -65,3 +69,39 @@ def change_password(user, validated_data):
     user.save()
     
     return { "message": "Password changed successfully."}
+
+
+def forgot_password(validated_data):
+
+    email = validated_data["email"]
+
+    # Check user
+    user = User.objects.filter(email=email).first()
+
+    if not user:
+        raise ValidationError({
+            "email": "User with this email does not exist."
+        })
+
+    # Delete previous OTP
+    PasswordResetOTP.objects.filter(user=user).delete()
+
+    # Generate OTP
+    otp = generate_otp()
+
+    # Save OTP
+    PasswordResetOTP.objects.create(
+        user=user,
+        otp=otp,
+    )
+
+    # Send Email
+    send_mail(
+        subject="Password Reset OTP",
+        message=f"Your OTP is {otp}. It is valid for 5 minutes.",
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[email],
+        fail_silently=False,
+    )
+
+    return {"message": "OTP sent successfully."}
