@@ -34,3 +34,11 @@ class LoginSerializer(serializers.Serializer):
 class LogoutSerializer(serializers.Serializer):
     
     refresh = serializers.CharField()
+    
+    
+class ChangePasswordSerializer(serializers.Serializer):
+    
+    old_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True)
+    

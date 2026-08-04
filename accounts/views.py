@@ -5,8 +5,8 @@ from .serializers import UserSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import LoginSerializer, LogoutSerializer
-from .services import login_user,logout_user
+from .serializers import LoginSerializer, LogoutSerializer, ChangePasswordSerializer
+from .services import login_user,logout_user, change_password
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -38,3 +38,14 @@ class LogoutAPIView(APIView):
         data = logout_user(serializer.validated_data)
         return Response(data, status=status.HTTP_200_OK)    
     
+
+class ChangePasswordAPIView(APIView):
+    
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        
+        serializer = ChangePasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = change_password(request.user, serializer.validated_data)
+        return Response(data, status=status.HTTP_200_OK)
