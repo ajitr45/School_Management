@@ -1,4 +1,5 @@
 from django.contrib.auth import authenticate
+from django.utils import timezone
 from rest_framework.exceptions import AuthenticationFailed, ValidationError
 from rest_framework_simplejwt.tokens import RefreshToken    
 from rest_framework.exceptions import ValidationError as validationError
@@ -90,10 +91,7 @@ def forgot_password(validated_data):
     otp = generate_otp()
 
     # Save OTP
-    PasswordResetOTP.objects.create(
-        user=user,
-        otp=otp,
-    )
+    PasswordResetOTP.objects.create(user=user, otp=otp)
 
     # Send Email
     send_mail(
@@ -105,3 +103,42 @@ def forgot_password(validated_data):
     )
 
     return {"message": "OTP sent successfully.",}
+
+
+
+def verify_otp(validated_data):
+
+    email = validated_data["email"]
+    otp = validated_data["otp"]
+
+    # Check user
+    user = User.objects.filter(email=email).first()
+
+    if not user:
+        raise ValidationError({
+            "email": "User with this email does not exist."
+        })
+
+    # Check OTP
+    otp_record = PasswordResetOTP.objects.filter(user=user, otp=otp).first()
+
+    if not otp_record:
+        raise ValidationError({
+            "otp": "Invalid OTP."
+        })
+
+    # Check Expiry
+    if otp_record.expires_at < timezone.now():
+        otp_record.delete()
+
+        raise ValidationError({
+            "otp": "OTP has expired."
+        })
+
+    # Verify OTP
+    otp_record.is_verified = True
+    otp_record.save()
+
+    return {
+        "message": "OTP verified successfully."
+    }

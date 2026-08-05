@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ForgotPasswordAPIView, UserViewSet, LoginAPIView,LogoutAPIView, ChangePasswordAPIView
+from .views import ForgotPasswordAPIView, UserViewSet, LoginAPIView,LogoutAPIView, ChangePasswordAPIView, VerifyOTPAPIView
 
 
 router = DefaultRouter()
@@ -15,4 +15,5 @@ urlpatterns = [
     path("logout/", LogoutAPIView.as_view(), name="logout"),
     path("change-password/", ChangePasswordAPIView.as_view(), name="change-password"),
     path("forgot-password/", ForgotPasswordAPIView.as_view(), name="forgot-password"),
+    path("verify-otp/", VerifyOTPAPIView.as_view(), name="verify-otp"),
 ]
