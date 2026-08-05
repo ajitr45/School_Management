@@ -104,4 +104,4 @@ def forgot_password(validated_data):
         fail_silently=False,
     )
 
-    return {"message": "OTP sent successfully."}
+    return {"message": "OTP sent successfully.",}
