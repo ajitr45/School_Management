@@ -142,3 +142,50 @@ def verify_otp(validated_data):
     return {
         "message": "OTP verified successfully."
     }
+    
+def reset_password(validated_data):
+
+    email = validated_data["email"]
+    otp = validated_data["otp"]
+    new_password = validated_data["new_password"]
+    confirm_password = validated_data["confirm_password"]
+
+    # Check User
+    user = User.objects.filter(email=email).first()
+
+    if not user:
+        raise ValidationError({"email": "User with this email does not exist."})
+
+    # Check OTP
+    otp_record = PasswordResetOTP.objects.filter(user=user, otp=otp).first()
+
+    if not otp_record:
+        raise ValidationError({"otp": "Invalid OTP."})
+
+    # Check Expiry
+    if otp_record.expires_at < timezone.now():
+        otp_record.delete()
+
+        raise ValidationError({"otp": "OTP has expired."})
+
+    # Check Verification
+    if not otp_record.is_verified:
+        raise ValidationError({"otp": "Please verify OTP first."})
+
+    # Check Password Match
+    if new_password != confirm_password:
+        raise ValidationError({"confirm_password": "Passwords do not match."})
+
+    # Change Password
+    user.set_password(new_password)
+    user.save()
+
+    # Delete OTP
+    otp_record.delete()
+
+    return {"message": "Password reset successfully."}
+
+
+def get_profile(user):
+    
+    return user

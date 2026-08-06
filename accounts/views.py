@@ -1,12 +1,12 @@
 from django.shortcuts import render
 from rest_framework.viewsets import ModelViewSet
 from .models import User 
-from .serializers import ForgotPasswordSerializer, UserSerializer, VerifyOTPSerializer
+from .serializers import ForgotPasswordSerializer, ResetPasswordSerializer, UserSerializer, VerifyOTPSerializer, ProfileSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import LoginSerializer, LogoutSerializer, ChangePasswordSerializer
-from .services import forgot_password, login_user,logout_user, change_password, verify_otp
+from .services import forgot_password, get_profile, login_user,logout_user, change_password, reset_password, verify_otp
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -71,3 +71,25 @@ class VerifyOTPAPIView(APIView):
         data = verify_otp(serializer.validated_data)
 
         return Response(data, status=status.HTTP_200_OK)
+    
+class ResetPasswordAPIView(APIView):
+
+    def post(self, request):
+
+        serializer = ResetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = reset_password(serializer.validated_data)
+
+        return Response(data, status=status.HTTP_200_OK)
+    
+
+class ProfileAPIView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        
+        user = get_profile(request.user)
+        serializer = ProfileSerializer(user)
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
