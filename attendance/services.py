@@ -1,12 +1,10 @@
 from rest_framework.exceptions import ValidationError
-
 from .models import Attendance
 
 
 def create_attendance(request, validated_data):
 
-    # teacher = request.user.teacher
-    teacher = validated_data["teacher"]
+    teacher = request.user.teacher
 
     attendance_exists = Attendance.objects.filter(
         student=validated_data["student"],
