@@ -22,35 +22,35 @@ class IsTeacher(BasePermission):
         )
 
 
-class IsStudent(BasePermission):
+# class IsStudent(BasePermission):
 
-    def has_permission(self, request, view):
+#     def has_permission(self, request, view):
 
-        return (
-            request.user.is_authenticated and
-            request.user.role == User.STUDENT
-        )
-
-
-class IsAdminOrTeacher(BasePermission):
-
-    def has_permission(self, request, view):
-
-        return (
-            request.user.is_authenticated and
-            request.user.role in [User.ADMIN, User.TEACHER]
-        )
+#         return (
+#             request.user.is_authenticated and
+#             request.user.role == User.STUDENT
+#         )
 
 
-class IsAdminTeacherOrStudent(BasePermission):
+# class IsAdminOrTeacher(BasePermission):
 
-    def has_permission(self, request, view):
+#     def has_permission(self, request, view):
 
-        return (
-            request.user.is_authenticated and
-            request.user.role in [
-                User.ADMIN,
-                User.TEACHER,
-                User.STUDENT,
-            ]
-        )
+#         return (
+#             request.user.is_authenticated and
+#             request.user.role in [User.ADMIN, User.TEACHER]
+#         )
+
+
+# class IsAdminTeacherOrStudent(BasePermission):
+
+#     def has_permission(self, request, view):
+
+#         return (
+#             request.user.is_authenticated and
+#             request.user.role in [
+#                 User.ADMIN,
+#                 User.TEACHER,
+#                 User.STUDENT,
+#             ]
+#         )
