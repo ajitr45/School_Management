@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.viewsets import ModelViewSet
 from .models import User 
 from .serializers import ForgotPasswordSerializer, ResetPasswordSerializer, UserSerializer, VerifyOTPSerializer, ProfileSerializer

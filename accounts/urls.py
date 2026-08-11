@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import ForgotPasswordAPIView, ProfileAPIView, ResetPasswordAPIView, UserViewSet, LoginAPIView,LogoutAPIView, ChangePasswordAPIView, VerifyOTPAPIView
+from rest_framework_simplejwt.views import TokenRefreshView
 
 
 router = DefaultRouter()
@@ -18,5 +19,6 @@ urlpatterns = [
     path("verify-otp/", VerifyOTPAPIView.as_view(), name="verify-otp"),
     path("reset-password/", ResetPasswordAPIView.as_view(), name="reset-password"),
     path("profile/", ProfileAPIView.as_view(), name="profile"),
-    
+     path("token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
 ]
+    
