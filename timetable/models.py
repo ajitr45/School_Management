@@ -10,7 +10,7 @@ class Timetable(models.Model):
         ("MONDAY", "Monday"),
         ("TUESDAY", "Tuesday"),
         ("WEDNESDAY", "Wednesday"),
-        ("THRUSDAY", "Thrusday"),
+        ("THURSDAY", "Thursday"),
         ("FRIDAY", "Friday"),
         ("SATURDAY", "Saturday"),
     ]
