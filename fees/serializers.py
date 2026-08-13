@@ -40,6 +40,7 @@ class FeePaymentSerializer(serializers.ModelSerializer):
         model = FeePayment
         fields = "__all__"
         read_only_fields = (
+            "student_fee"
             "receipt_number",
             "payment_date",
             "created_at",
