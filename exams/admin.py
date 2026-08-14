@@ -15,10 +15,6 @@ class ExamAdmin(admin.ModelAdmin):
         "end_date",
     )
     
-    list_display = (
-        "academic_year",
-        "school_class",
-    )
     
     search_fields = (
         "name",
@@ -64,6 +60,6 @@ class StudentResultAdmin(admin.ModelAdmin):
     list_filter =( "exam_subject__exam",)
     
     search_fields = (
-        "student_admission_student_name",
-        "exam_subject_subject_name",
+        "student__admission__student_name",
+        "exam_subject__subject__name",
     )

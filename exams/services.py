@@ -5,11 +5,23 @@ from students.models import Student
 
 
 def created_exam(validated_data):
+    
+    start_date = validated_data["start_date"]
+    end_date = validated_data["end_date"]
+    
+    if end_date < start_date:
+        raise ValidationError({"end_date": "End date cannot be before start date."})
 
     return Exam.objects.create(**validated_data)
 
 
 def updated_exam(exam, validated_data):
+    
+    start_date = validated_data["start_date"]
+    end_date = validated_data["end_date"]
+    
+    if end_date < start_date:
+        raise ValidationError({"end_date": "End date cannot be before start date. "})
 
     for attr, value in validated_data.items():
         setattr(exam, attr, value)
@@ -21,7 +33,18 @@ def updated_exam(exam, validated_data):
 
 def created_exam_subject(validated_data):
     
-
+    exam = validated_data["exam"]
+    subject = validated_data["subject"]
+    maximum_marks = validated_data["maximum_marks"]
+    pass_marks = validated_data["pass_marks"]
+    
+    # Subject must belong to the same class as the exam.  
+    if subject.school_class !=  exam.school_class:
+        raise ValidationError({
+            "subject" : "Selected subject does not belong to the exam's class."
+        })
+    
+    # Pass marks cannot exceed maximum marks.
     if validated_data["pass_marks"] > validated_data["maximum_marks"]:
         raise ValidationError(
             {
@@ -34,29 +57,42 @@ def created_exam_subject(validated_data):
 
 def updated_exam_subject(exam_subject, validated_data):
 
-    maximum_marks = validated_data.get( "maximum_marks", exam_subject.maximum_marks,)
-    pass_marks = validated_data.get( "pass_marks", exam_subject.pass_marks )
+    exam = validated_data.get("exam", exam_subject.exam)
+    subject = validated_data.get("subject", exam_subject.subject)
+    maximum_marks = validated_data.get("maximum_marks", exam_subject.maximum_marks)
+    pass_marks = validated_data.get("pass_marks", exam_subject.pass_marks)
 
+    # Subject must belong to the same class as the exam.
+    if subject.school_class != exam.school_class:
+        raise ValidationError({"subject": "Selected subject does not belong to the exam's class. "})
+
+    # Pass marks cannot be greater than maximum marks.
     if pass_marks > maximum_marks:
-        raise ValidationError(
-            {
-                "pass_marks": "Pass marks cannot be greater than maximum marks."
-            }
-        )
+        raise ValidationError({"pass_marks": "Pass marks cannot be greater than maximum marks."})
 
+    # Update the existing ExamSubject.
     for attr, value in validated_data.items():
         setattr(exam_subject, attr, value)
 
     exam_subject.save()
+
     return exam_subject
 
 
-
 def created_student_result(validated_data):
-
+    student = validated_data["student"]
     exam_subject = validated_data["exam_subject"]
     marks_obtained = validated_data["marks_obtained"]
-
+    exam = exam_subject.exam
+    
+    # Student and exams must belong to the same class .  
+    if student.school_class !=  exam.school_class:
+        raise ValidationError({
+            "student" : "Student does not belong to the exam's class."
+            })
+    
+    
+    # Marks cannot exceeds maximum marks.
     if marks_obtained > exam_subject.maximum_marks:
         raise ValidationError(
             {
@@ -69,11 +105,10 @@ def created_student_result(validated_data):
 
 def updated_student_result(student_result, validated_data):
 
-    exam_subject = validated_data.get( "exam_subject", student_result.exam_subject )
+ 
+    marks_obtained = validated_data.get( "marks_obtained", student_result.marks_obtained)    
 
-    marks_obtained = validated_data.get( "marks_obtained", student_result.marks_obtained,)
-
-    if marks_obtained > exam_subject.maximum_marks:
+    if marks_obtained > student_result.exam_subject.maximum_marks:
         raise ValidationError(
             {
                 "marks_obtained": "Marks obtained cannot exceed maximum marks."
@@ -140,15 +175,7 @@ def generate_report_card(student_id, exam_id):
 
     exam = get_object_or_404( Exam, id=exam_id )
 
-    results = (StudentResult.objects
-        .filter(
-            student=student,
-            exam_subject__exam=exam,
-        ).select_related(
-            "exam_subject",
-            "exam_subject__subject",
-        )
-    )
+    results = (StudentResult.objects.filter(student=student, exam_subject__exam=exam,).select_related("exam_subject","exam_subject__subject"))
 
     if not results.exists():
         raise ValueError("No result found.")
