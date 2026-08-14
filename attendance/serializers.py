@@ -8,7 +8,6 @@ class AttendanceCreateSerializer(serializers.ModelSerializer):
         model = Attendance
         fields = [
             "student",
-            "teacher",
             "date",
             "status",
             "remarks",

@@ -1,8 +1,5 @@
 from django.urls import path
-from .views import (
-    AttendanceListCreateAPIView,
-    AttendanceDetailAPIView,
-)
+from .views import AttendanceListCreateAPIView, AttendanceDetailAPIView
 
 urlpatterns = [
     path("",AttendanceListCreateAPIView.as_view(),name="attendance-list-create",),

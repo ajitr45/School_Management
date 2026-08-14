@@ -18,9 +18,9 @@ class Teacher(models.Model):
     mobile = models.CharField(max_length=15,unique=True)
     qualification = models.CharField(max_length=100)
     experience = models.PositiveIntegerField(default=0, help_text="Experience in years")
-    date_of_birth = models.DateField(blank=True, null=True)
+    date_of_birth = models.DateField()
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
-    address = models.TextField(blank=True, null=True)
+    address = models.TextField()
     photo = models.ImageField(upload_to='teacher_photos/', blank=True, null=True)
     joining_date = models.DateField( ) 
     

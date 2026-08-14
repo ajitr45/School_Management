@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from accounts.models import User
-from accounts.permissions import (IsAdminOrTeacher, IsAdminTeacherOrStudent)
+from accounts.permissions import IsTeacher, IsAdminOrTeacher, IsAdminTeacherOrStudent
 from .models import Attendance
 from .serializers import (AttendanceCreateSerializer, AttendanceUpdateSerializer, AttendanceDetailSerializer)
 from .services import (create_attendance, update_attendance)
@@ -18,7 +18,7 @@ class AttendanceListCreateAPIView(APIView):
         if self.request.method == "GET":
             permission_classes = [IsAuthenticated, IsAdminTeacherOrStudent]
         else:
-            permission_classes = [IsAuthenticated, IsAdminOrTeacher]
+            permission_classes = [IsAuthenticated, IsTeacher]
 
         return [permission() for permission in permission_classes]
 
