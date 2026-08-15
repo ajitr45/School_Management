@@ -60,10 +60,6 @@ class HomeworkDetailAPIView(APIView):
         if self.request.method == "GET":
             permission_classes = [IsAdminTeacherOrStudent]
 
-        elif self.request.method in ["PUT", "PATCH"]:
-            # Only Admin and Teacher can update homework.
-            permission_classes = [IsAdminOrTeacher]
-
         else:
             # Only Admin and Teacher can delete homework.
             permission_classes = [IsAdminOrTeacher]
