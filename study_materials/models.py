@@ -12,6 +12,17 @@ class Chapter(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    "school_class",
+                    "subject",
+                    "chapter_number",
+                ],
+                name="unique_chapter_number_per_subject",
+            )
+        ]
         
         ordering = [
             "school_class",

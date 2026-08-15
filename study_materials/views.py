@@ -100,23 +100,17 @@ class StudyMaterialListCreateAPIView(APIView):
 
     def get(self, request):
 
-        if request.user.role == User.ADMIN:
+        study_materials = StudyMaterial.objects.all()
 
-            # Admin can view all study materials.
-            study_materials = StudyMaterial.objects.all()
-
-        elif request.user.role == User.TEACHER:
-
-            # Teachers can view all study materials.
-            study_materials = StudyMaterial.objects.all()
-
-        else:
-
-            # Students can view materials for their own class.
-            study_materials = StudyMaterial.objects.filter(chapter__school_class=request.user.student.school_class)
+        if request.user.role == User.STUDENT:
+            
+            study_materials = study_materials.filter(chapter__school_class=request.user.student.school_class)
 
         serializer = StudyMaterialSerializer(study_materials, many=True)
+        
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 
     def post(self, request):
 
