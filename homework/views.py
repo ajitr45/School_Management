@@ -133,4 +133,4 @@ class HomeworkDetailAPIView(APIView):
 
         homework.delete()
 
-        return Response({"message": "Homework deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
