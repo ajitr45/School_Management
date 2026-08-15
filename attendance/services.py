@@ -8,20 +8,16 @@ def create_attendance(request, validated_data):
 
     attendance_exists = Attendance.objects.filter(
         student=validated_data["student"],
-        date=validated_data["date"],
-    ).exists()
+        date=validated_data["date"],).exists()
 
     if attendance_exists:
-        raise ValidationError(
-            {"message": "Attendance already marked for this student."}
-        )
+        raise ValidationError({
+            "detail": "Attendance already marked for this student on this date."
+        })
 
     attendance = Attendance.objects.create(
-        student=validated_data["student"],
         teacher=teacher,
-        date=validated_data["date"],
-        status=validated_data["status"],
-        remarks=validated_data.get("remarks"),
+        **validated_data,
     )
 
     return attendance
