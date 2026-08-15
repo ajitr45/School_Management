@@ -44,10 +44,10 @@ class Timetable(models.Model):
         ]
         
         
-        def __str__(self):
-            return (
-                f"{self.school_class} - "
-                f"{self.section} - "
-                f"{self.day} - "
-                f"{self.period}"
-            )
+    def __str__(self):
+        return (
+            f"{self.school_class} - "
+            f"{self.section} - "
+            f"{self.day} - "
+            f"{self.period}"
+        )
