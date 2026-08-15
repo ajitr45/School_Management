@@ -8,12 +8,6 @@ class FeeStructureSerializer(serializers.ModelSerializer):
         model = FeeStructure
         fields = "__all__"
 
-    def validate_amount(self, value):
-        if value <= 0:
-            raise serializers.ValidationError(
-                "Fee amount must be greater than zero."
-            )
-        return value
 
 
 class StudentFeeSerializer(serializers.ModelSerializer):
@@ -40,16 +34,9 @@ class FeePaymentSerializer(serializers.ModelSerializer):
         model = FeePayment
         fields = "__all__"
         read_only_fields = (
-            "student_fee"
+            "student_fee",
             "receipt_number",
             "payment_date",
             "created_at",
             "updated_at",
         )
-
-    def validate_amount(self, value):
-        if value <= 0:
-            raise serializers.ValidationError(
-                "Amount must be greater than zero."
-            )
-        return value

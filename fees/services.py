@@ -7,14 +7,20 @@ from .utils import generate_receipt_number
 
 @transaction.atomic
 def create_fee_structure(validated_data):
+    
+    if validated_data["amount"] <= 0:
+        raise ValidationError({"amount": "Fee amount must be greater than zero."})
 
-    fee_structure = FeeStructure.objects.create(**validated_data)
-
-    return fee_structure
+    return FeeStructure.objects.create(**validated_data)
 
 
 @transaction.atomic
 def update_fee_structure(fee_structure, validated_data):
+    
+    amount = validated_data.get("amount", fee_structure.amount)
+    
+    if amount <= 0:
+        raise ValidationError({"amount": "Fee amount must be greater than zero."})
 
     for key, value in validated_data.items():
         setattr(fee_structure, key, value)
