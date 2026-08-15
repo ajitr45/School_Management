@@ -17,8 +17,8 @@ def created_exam(validated_data):
 
 def updated_exam(exam, validated_data):
     
-    start_date = validated_data["start_date"]
-    end_date = validated_data["end_date"]
+    start_date = validated_data.get("start_date", exam.start_date)
+    end_date = validated_data.get("end_date", exam.end_date)
     
     if end_date < start_date:
         raise ValidationError({"end_date": "End date cannot be before start date. "})
@@ -172,13 +172,20 @@ def calculate_division(percentage):
 def generate_report_card(student_id, exam_id):
 
     student = get_object_or_404( Student, id=student_id,)
-
     exam = get_object_or_404( Exam, id=exam_id )
+    
+    if student.school_class != exam.school_class:
+        raise ValidationError({"exam": "This exam does not belong to the student's class. "})
 
     results = (StudentResult.objects.filter(student=student, exam_subject__exam=exam,).select_related("exam_subject","exam_subject__subject"))
+    subject_count = ExamSubject.objects.filter(exam=exam).count()
+    
+        
+    if results.count() != subject_count:
+        raise ValidationError({
+            "detail" : "Report card cannot be generated because all subject results are not available."
+        })
 
-    if not results.exists():
-        raise ValueError("No result found.")
 
     total_marks = 0
     obtained_marks = 0
