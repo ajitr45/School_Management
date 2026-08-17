@@ -5,7 +5,7 @@ from rest_framework import status
 from .serializers import TeacherSerializer, TeacherAssignmentSerializer, TeacherListSerializer, TeacherDetailSerializer, TeacherUpdateSerializer
 from .services import assign_teacher, create_teacher, update_teacher
 from .models import Teacher
-from accounts.permissions import IsAdmin
+from accounts.permissions import IsAdmin, IsAdminTeacherOrStudent, IsAdminOrTeacher
 
 
 class TeacherCreateAPIView(APIView):
@@ -22,7 +22,7 @@ class TeacherCreateAPIView(APIView):
     
 class TeacherAssignmentAPIView(APIView):
     
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAdminOrTeacher]
 
     def post(self, request):
     
@@ -34,7 +34,7 @@ class TeacherAssignmentAPIView(APIView):
 
 class TeacherListAPIView(APIView):
     
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAdminTeacherOrStudent]
 
     def get(self, request):
         teachers = Teacher.objects.all()
@@ -43,8 +43,15 @@ class TeacherListAPIView(APIView):
     
 
 class TeacherDetailAPIView(APIView):
-    
-    permission_classes = [IsAdmin]
+
+    def get_permissions(self):
+        
+        if self.request.method == "GET":
+            permission_classes = [IsAdminTeacherOrStudent]
+        else:
+            permission_classes = [IsAdmin]
+
+        return [permission() for permission in permission_classes]
 
     def get(self, request, pk):
 
