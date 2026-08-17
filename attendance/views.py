@@ -2,7 +2,6 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
 from accounts.models import User
 from accounts.permissions import IsTeacher, IsAdminOrTeacher, IsAdminTeacherOrStudent
@@ -16,9 +15,9 @@ class AttendanceListCreateAPIView(APIView):
     def get_permissions(self):
 
         if self.request.method == "GET":
-            permission_classes = [IsAuthenticated, IsAdminTeacherOrStudent]
+            permission_classes = [IsAdminTeacherOrStudent]
         else:
-            permission_classes = [IsAuthenticated, IsTeacher]
+            permission_classes = [ IsTeacher]
 
         return [permission() for permission in permission_classes]
 
@@ -52,9 +51,9 @@ class AttendanceDetailAPIView(APIView):
     def get_permissions(self):
 
         if self.request.method == "GET":
-            permission_classes = [IsAuthenticated, IsAdminTeacherOrStudent]
+            permission_classes = [ IsAdminTeacherOrStudent]
         else:
-            permission_classes = [IsAuthenticated,IsAdminOrTeacher]
+            permission_classes = [IsAdminOrTeacher]
 
         return [permission() for permission in permission_classes]
 
@@ -65,15 +64,11 @@ class AttendanceDetailAPIView(APIView):
         # Object Level Validation
         if request.user.role == User.TEACHER:
             if attendance.teacher != request.user.teacher:
-                raise PermissionDenied(
-                    "You cannot view this attendance."
-                )
+                raise PermissionDenied("You cannot view this attendance.")
 
         elif request.user.role == User.STUDENT:
             if attendance.student != request.user.student:
-                raise PermissionDenied(
-                    "You can view only your attendance."
-                )
+                raise PermissionDenied("You can view only your attendance.")
 
         serializer = AttendanceDetailSerializer(attendance)
 
