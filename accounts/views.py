@@ -9,11 +9,13 @@ from rest_framework import status
 from .serializers import LoginSerializer, LogoutSerializer, ChangePasswordSerializer
 from .services import forgot_password, get_profile, login_user,logout_user, change_password, reset_password, verify_otp
 from rest_framework.permissions import IsAuthenticated
+from accounts.permissions import IsAdmin
 
 
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAdmin]
     
     
 
