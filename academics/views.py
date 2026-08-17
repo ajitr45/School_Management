@@ -15,17 +15,9 @@ class SchoolClassViewSet(ModelViewSet):
 
         # Admin, Teacher and Student can view school classes.
         if self.action in ["list", "retrieve"]:
-
             permission_classes = [IsAdminTeacherOrStudent]
 
-        # Only Admin can create/update school classes.
-        elif self.action in ["create", "update", "partial_update"]:
-
-            permission_classes = [IsAdmin]
-
-        # DELETE is also handled here but destroy() below will block it.
         else:
-
             permission_classes = [IsAdmin]
 
         return [permission() for permission in permission_classes]
