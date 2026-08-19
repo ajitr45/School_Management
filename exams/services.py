@@ -104,9 +104,17 @@ def created_student_result(validated_data):
 
 
 def updated_student_result(student_result, validated_data):
-
- 
-    marks_obtained = validated_data.get( "marks_obtained", student_result.marks_obtained)    
+    
+    student = validated_data.get("student", student_result.student)
+    exam_subject = validated_data.get("exam_subject", student_result.exam_subject)
+    marks_obtained = validated_data.get( "marks_obtained", student_result.marks_obtained)
+    exam = exam_subject.exam 
+    
+    # # Student and exam must belong to the same class.
+    if student.school_class != exam.school_class:
+        raise ValidationError({
+            "student" : "Student dose not belong to the exam's class."
+        })    
 
     if marks_obtained > student_result.exam_subject.maximum_marks:
         raise ValidationError(
