@@ -4,11 +4,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 from accounts.models import User
-from accounts.permissions import IsAdminOrTeacher, IsAdminTeacherOrStudent
-from .models import  FeeStructure, StudentFee, FeePayment
-from .serializers import FeeStructureSerializer, StudentFeeSerializer, FeePaymentSerializer
+from accounts.permissions import IsAdmin, IsAdminTeacherOrStudent
+from .models import FeeStructure, StudentFee, FeePayment
+from .serializers import  FeeStructureSerializer, StudentFeeSerializer,  FeePaymentSerializer
 from .services import  create_fee_structure, update_fee_structure, create_student_fee, update_student_fee, create_fee_payment, update_fee_payment
-
 
 
 class FeeStructureListCreateAPIView(APIView):
@@ -18,9 +17,9 @@ class FeeStructureListCreateAPIView(APIView):
         if self.request.method == "GET":
             permission_classes = [IsAdminTeacherOrStudent]
         else:
-            permission_classes = [IsAdminOrTeacher]
+            permission_classes = [IsAdmin]
 
-        return [ permission() for permission in permission_classes]
+        return [permission() for permission in permission_classes]
 
     def get(self, request):
 
@@ -28,17 +27,16 @@ class FeeStructureListCreateAPIView(APIView):
 
         # Student can see only his/her class fee structure.
         if request.user.role == User.STUDENT:
-
             fee_structures = fee_structures.filter(school_class=request.user.student.school_class)
 
         serializer = FeeStructureSerializer(fee_structures, many=True)
-
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
 
         serializer = FeeStructureSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
         fee_structure = create_fee_structure(serializer.validated_data)
 
         return Response(FeeStructureSerializer(fee_structure).data, status=status.HTTP_201_CREATED)
@@ -51,7 +49,7 @@ class FeeStructureDetailAPIView(APIView):
         if self.request.method == "GET":
             permission_classes = [IsAdminTeacherOrStudent]
         else:
-            permission_classes = [IsAdminOrTeacher]
+            permission_classes = [IsAdmin]
 
         return [permission() for permission in permission_classes]
 
@@ -62,7 +60,7 @@ class FeeStructureDetailAPIView(APIView):
         # Student can see only his/her class fee structure.
         if request.user.role == User.STUDENT:
 
-            if (fee_structure.school_class != request.user.student.school_class):
+            if fee_structure.school_class != request.user.student.school_class:
                 raise PermissionDenied("You cannot view this fee structure.")
 
         serializer = FeeStructureSerializer(fee_structure)
@@ -74,7 +72,7 @@ class FeeStructureDetailAPIView(APIView):
         fee_structure = get_object_or_404(FeeStructure, pk=pk)
         serializer = FeeStructureSerializer(fee_structure, data=request.data)
         serializer.is_valid(raise_exception=True)
-        
+
         fee_structure = update_fee_structure(fee_structure, serializer.validated_data)
 
         return Response(FeeStructureSerializer(fee_structure).data, status=status.HTTP_200_OK)
@@ -87,7 +85,7 @@ class FeeStructureDetailAPIView(APIView):
 
         fee_structure = update_fee_structure(fee_structure, serializer.validated_data)
 
-        return Response(FeeStructureSerializer(fee_structure).data, status=status.HTTP_200_OK,)
+        return Response(FeeStructureSerializer(fee_structure).data, status=status.HTTP_200_OK)
 
 
 class StudentFeeListCreateAPIView(APIView):
@@ -97,7 +95,7 @@ class StudentFeeListCreateAPIView(APIView):
         if self.request.method == "GET":
             permission_classes = [IsAdminTeacherOrStudent]
         else:
-            permission_classes = [IsAdminOrTeacher]
+            permission_classes = [IsAdmin]
 
         return [permission() for permission in permission_classes]
 
@@ -107,7 +105,6 @@ class StudentFeeListCreateAPIView(APIView):
 
         # Student can see only his/her own fee records.
         if request.user.role == User.STUDENT:
-
             student_fees = student_fees.filter(student=request.user.student)
 
         serializer = StudentFeeSerializer(student_fees, many=True)
@@ -118,6 +115,7 @@ class StudentFeeListCreateAPIView(APIView):
 
         serializer = StudentFeeSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
         student_fee = create_student_fee(serializer.validated_data)
 
         return Response(StudentFeeSerializer(student_fee).data, status=status.HTTP_201_CREATED)
@@ -130,7 +128,7 @@ class StudentFeeDetailAPIView(APIView):
         if self.request.method == "GET":
             permission_classes = [IsAdminTeacherOrStudent]
         else:
-            permission_classes = [IsAdminOrTeacher]
+            permission_classes = [IsAdmin]
 
         return [permission() for permission in permission_classes]
 
@@ -153,19 +151,20 @@ class StudentFeeDetailAPIView(APIView):
         student_fee = get_object_or_404(StudentFee, pk=pk)
         serializer = StudentFeeSerializer(student_fee, data=request.data)
         serializer.is_valid(raise_exception=True)
-        student_fee = update_student_fee(student_fee, serializer.validated_data,)
+
+        student_fee = update_student_fee(student_fee, serializer.validated_data)
 
         return Response(StudentFeeSerializer(student_fee).data, status=status.HTTP_200_OK)
 
     def patch(self, request, pk):
 
         student_fee = get_object_or_404(StudentFee, pk=pk)
-        serializer = StudentFeeSerializer(student_fee, data=request.data,partial=True)
+        serializer = StudentFeeSerializer(student_fee, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
+
         student_fee = update_student_fee(student_fee, serializer.validated_data)
 
-        return Response(StudentFeeSerializer(student_fee).data, status=status.HTTP_200_OK)
-
+        return Response( StudentFeeSerializer(student_fee).data, status=status.HTTP_200_OK)
 
 
 class FeePaymentListCreateAPIView(APIView):
@@ -175,7 +174,7 @@ class FeePaymentListCreateAPIView(APIView):
         if self.request.method == "GET":
             permission_classes = [IsAdminTeacherOrStudent]
         else:
-            permission_classes = [IsAdminOrTeacher]
+            permission_classes = [IsAdmin]
 
         return [permission() for permission in permission_classes]
 
@@ -185,12 +184,11 @@ class FeePaymentListCreateAPIView(APIView):
 
         # Student can see only his/her own payments.
         if request.user.role == User.STUDENT:
-
             fee_payments = fee_payments.filter(student_fee__student=request.user.student)
 
         serializer = FeePaymentSerializer(fee_payments, many=True)
 
-        return Response(serializer.data, status=status.HTTP_200_OK,)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
 
@@ -208,7 +206,7 @@ class FeePaymentDetailAPIView(APIView):
         if self.request.method == "GET":
             permission_classes = [IsAdminTeacherOrStudent]
         else:
-            permission_classes = [IsAdminOrTeacher]
+            permission_classes = [IsAdmin]
 
         return [permission() for permission in permission_classes]
 
@@ -219,7 +217,7 @@ class FeePaymentDetailAPIView(APIView):
         # Student can see only his/her own payment.
         if request.user.role == User.STUDENT:
 
-            if (fee_payment.student_fee.student != request.user.student):
+            if fee_payment.student_fee.student != request.user.student:
                 raise PermissionDenied("You cannot view this payment.")
 
         serializer = FeePaymentSerializer(fee_payment)
@@ -229,11 +227,13 @@ class FeePaymentDetailAPIView(APIView):
     def put(self, request, pk):
 
         fee_payment = get_object_or_404(FeePayment, pk=pk)
+
         serializer = FeePaymentSerializer(fee_payment, data=request.data)
         serializer.is_valid(raise_exception=True)
+
         fee_payment = update_fee_payment(fee_payment, serializer.validated_data)
 
-        return Response(FeePaymentSerializer(fee_payment).data, status=status.HTTP_200_OK)
+        return Response(FeePaymentSerializer(fee_payment).data,status=status.HTTP_200_OK)
 
     def patch(self, request, pk):
 
