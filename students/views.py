@@ -29,7 +29,11 @@ class StudentViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Up
         return [permission() for permission in permission_classes]
 
     def get_queryset(self):
-
+        
+        if self.request.user.role == User.STUDENT:
+            
+            return Student.objects.filter(user = self.request.user)
+        
         # Admin and Teacher can access all student records.
         return Student.objects.all()
 
@@ -37,30 +41,13 @@ class StudentViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Up
 
         student = self.get_object()
 
-        # Student can access only his/her own record.
-    
-        if (request.user.role == User.STUDENT and student.user != request.user):
-            return Response(
-                {
-                    "detail": ("You do not have permission to access this student's information.")
-                },status=status.HTTP_403_FORBIDDEN,
-            )
         serializer = self.get_serializer(student)
 
-        return Response( serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def list(self, request):
+    def list(self, request, *args, **kwargs):
 
-        # Student should see only his/her own record.
-        if request.user.role == User.STUDENT:
-
-            students = Student.objects.filter(user=request.user)
-            serializer = self.get_serializer(students, many=True)
-
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        # Admin and Teacher can see all student records.
-        students = Student.objects.all()
+        students = self.get_queryset()
         serializer = self.get_serializer(students, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
