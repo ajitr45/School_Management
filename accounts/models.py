@@ -27,7 +27,7 @@ class PasswordResetOTP(models.Model):
     
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name = "password_reset_otps")
     otp = models.CharField(max_length=6)
-    is_varified = models.BooleanField(default=False)
+    is_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField(default=otp_expire)
     
