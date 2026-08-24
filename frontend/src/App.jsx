@@ -1,9 +1,15 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
+import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./pages/AdminDashboard";
-import TeacherDashboard from "./pages/TeacherDashboard";
-import StudentDashboard from "./pages/StudentDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Students from "./pages/Students";
+import StudentDetail from "./pages/StudentDetail";
+import EditStudent from "./pages/EditStudent";
+import Admissions from "./pages/Admissions";
+import AdmissionDetail from "./pages/AdmissionDetail";
+
+
 
 function App() {
     return (
@@ -11,33 +17,56 @@ function App() {
 
             <Routes>
 
-                <Route path="/" element={<Login />} />
+                {/* Login */}
+                <Route
+                    path="/"
+                    element={<Login />}
+                />
 
-                <Route path="/admin"
+
+                {/* Admin Routes */}
+                <Route
+                    path="/admin"
                     element={
                         <ProtectedRoute allowedRole="ADMIN">
-                            <AdminDashboard />
+                            <AdminLayout />
                         </ProtectedRoute>
                     }
-                />
+                >
 
-                <Route
-                    path="/teacher"
-                    element={
-                        <ProtectedRoute allowedRole="TEACHER">
-                            <TeacherDashboard />
-                        </ProtectedRoute>
-                    }
-                />
+                    {/* /admin */}
+                    <Route
+                        index
+                        element={<AdminDashboard />}
+                    />
 
-                <Route
-                    path="/student"
-                    element={
-                        <ProtectedRoute allowedRole="STUDENT">
-                            <StudentDashboard />
-                        </ProtectedRoute>
-                    }
-                />
+                    {/* /admin/students */}
+                    <Route
+                        path="students"
+                        element={<Students />}
+                    />
+
+                    <Route 
+                        path="students/:id"
+                        element={<StudentDetail/>}
+                    />
+
+                    <Route
+                        path="students/:id/edit"
+                        element={<EditStudent/>}
+                    />
+
+                    <Route  
+                        path="admissions"
+                        element={<Admissions/>}
+                    />
+
+                    <Route 
+                        path="admissions/:id"
+                        element={<AdmissionDetail/>}
+                    />
+
+                </Route>
 
             </Routes>
 
