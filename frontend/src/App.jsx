@@ -1,28 +1,48 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
 import Login from "./pages/Login";
 import AdminDashboard from "./pages/AdminDashboard";
 import TeacherDashboard from "./pages/TeacherDashboard";
 import StudentDashboard from "./pages/StudentDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
-  return (
-    <BrowserRouter>
+    return (
+        <BrowserRouter>
 
-      <Routes>
+            <Routes>
 
-        <Route path="/" element={<Login />} />
+                <Route path="/" element={<Login />} />
 
-        <Route path="/admin" element={<AdminDashboard />}/>
+                <Route path="/admin"
+                    element={
+                        <ProtectedRoute allowedRole="ADMIN">
+                            <AdminDashboard />
+                        </ProtectedRoute>
+                    }
+                />
 
-        <Route path="/teacher" element={<TeacherDashboard />}/>
+                <Route
+                    path="/teacher"
+                    element={
+                        <ProtectedRoute allowedRole="TEACHER">
+                            <TeacherDashboard />
+                        </ProtectedRoute>
+                    }
+                />
 
-        <Route path="/student" element={<StudentDashboard />}/>
+                <Route
+                    path="/student"
+                    element={
+                        <ProtectedRoute allowedRole="STUDENT">
+                            <StudentDashboard />
+                        </ProtectedRoute>
+                    }
+                />
 
-      </Routes>
+            </Routes>
 
-    </BrowserRouter>
-  );
+        </BrowserRouter>
+    );
 }
 
 export default App;
