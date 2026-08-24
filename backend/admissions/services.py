@@ -34,6 +34,7 @@ def approve_admission(admission_id, section):
     user = User.objects.create_user(
         username=student_id,
         email=admission.student_email,
+        first_name=admission.student_name,
         password=password,
         role=User.STUDENT
     )
