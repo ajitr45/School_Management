@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import TeacherSerializer, TeacherAssignmentSerializer, TeacherListSerializer, TeacherDetailSerializer, TeacherUpdateSerializer
 from .services import assign_teacher, create_teacher, update_teacher
-from .models import Teacher
+from .models import Teacher, TeacherAssignment
 from accounts.permissions import IsAdmin, IsAdminTeacherOrStudent, IsAdminOrTeacher
 
 
@@ -23,6 +23,13 @@ class TeacherCreateAPIView(APIView):
 class TeacherAssignmentAPIView(APIView):
     
     permission_classes = [IsAdminOrTeacher]
+    
+    def get(self, request):
+        
+        assignments = TeacherAssignment.objects.all()
+        serializer = TeacherAssignmentSerializer(assignments, many=True)
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
     
