@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -48,3 +49,38 @@ class ApproveAdmissionAPIView(APIView):
         data = approve_admission(admission_id=pk, section=serializer.validated_data["section"],)
 
         return Response(data, status=status.HTTP_200_OK)
+    
+
+class RejectAdmissionAPIView(APIView):
+
+    permission_classes = [IsAdmin]
+
+    def patch(self, request, pk):
+
+        admission = get_object_or_404( Admission, pk=pk)
+
+        if admission.status == "APPROVED":
+            return Response(
+                {
+                    "detail": "Approved admission cannot be rejected."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if admission.status == "REJECTED":
+            return Response(
+                {
+                    "detail": "Admission is already rejected."
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        admission.status = "REJECTED"
+        admission.save()
+
+        return Response(
+            {
+                "message": "Admission rejected successfully."
+            },
+            status=status.HTTP_200_OK
+        )
