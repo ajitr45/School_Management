@@ -5,25 +5,42 @@ import api from "../services/api";
 function Students () {
 
     const navigate = useNavigate();
-
     const [students, setStudents] = useState([]);
+    const [classes, setClasses] = useState([]);
+    const [sections, setSections] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-
     const [search, setSearch] = useState("");
     const [classFilter, setClassFilter] = useState("all");
     const [sectionFilter, setSectionFilter] = useState("all");
+    const [academicYearFilter, setAcademicYearFilter] = useState("all");
 
+
+    // =========================
+    // GET DATA
+    // =========================
 
     useEffect(() => {
 
-        const getStudents = async () => {
+        const getData = async () => {
 
             try {
 
-                const response = await api.get("students/");
+                const [
+                    studentsResponse,
+                    classesResponse,
+                    sectionsResponse
+                ] = await Promise.all([
 
-                setStudents(response.data);
+                    api.get("students/"),
+                    api.get("academics/classes/"),
+                    api.get("academics/sections/")
+
+                ]);
+
+                setStudents(studentsResponse.data);
+                setClasses(classesResponse.data);
+                setSections(sectionsResponse.data);
 
             } catch (error) {
 
@@ -36,42 +53,109 @@ function Students () {
                 setLoading(false);
 
             }
+
         };
 
-        getStudents();
+        getData();
 
     }, []);
 
 
-    // Search + Filter
-    const filteredStudents = students.filter((student) => {
+    // =========================
+    // ACADEMIC YEARS
+    // =========================
 
-        const fullName =
-            `${student.user?.first_name || ""} ${student.user?.last_name || ""}`;
+    const academicYears = [
+        ...new Set(
+            students
+                .map(
+                    (student) =>
+                        student.admission?.academic_year
+                )
+                .filter(Boolean)
+        )
+    ];
+
+
+    // =========================
+    // AVAILABLE SECTIONS
+    // =========================
+
+    const availableSections =
+        classFilter === "all"
+            ? sections
+            : sections.filter(
+                (section) =>
+                    section.school_class ===
+                    Number(classFilter)
+            );
+
+
+    // =========================
+    // FILTER STUDENTS
+    // =========================
+
+    const filteredStudents = students.filter((student) => {
 
         const searchText = search.toLowerCase();
 
 
         const matchesSearch =
-            student.student_id?.toLowerCase().includes(searchText) ||
-            fullName.toLowerCase().includes(searchText) ||
-            student.roll_number?.toString().includes(searchText);
+            student.student_id
+                ?.toLowerCase()
+                .includes(searchText) ||
+
+            student.admission?.student_name
+                ?.toLowerCase()
+                .includes(searchText) ||
+
+            student.admission?.mobile
+                ?.toLowerCase()
+                .includes(searchText);
 
 
         const matchesClass =
             classFilter === "all" ||
-            student.school_class?.id?.toString() === classFilter;
+            student.school_class === Number(classFilter);
 
 
         const matchesSection =
             sectionFilter === "all" ||
-            student.section?.id?.toString() === sectionFilter;
+            student.section === Number(sectionFilter);
 
 
-        return matchesSearch && matchesClass && matchesSection;
+        const matchesAcademicYear =
+            academicYearFilter === "all" ||
+            student.admission?.academic_year ===
+            academicYearFilter;
+
+
+        return (
+            matchesSearch &&
+            matchesClass &&
+            matchesSection &&
+            matchesAcademicYear
+        );
 
     });
 
+
+    // =========================
+    // CLASS FILTER CHANGE
+    // =========================
+
+    const handleClassFilterChange = (value) => {
+
+        setClassFilter(value);
+
+        setSectionFilter("all");
+
+    };
+
+
+    // =========================
+    // LOADING
+    // =========================
 
     if (loading) {
 
@@ -87,6 +171,10 @@ function Students () {
 
     }
 
+
+    // =========================
+    // ERROR
+    // =========================
 
     if (error) {
 
@@ -104,36 +192,34 @@ function Students () {
 
 
     return (
+
         <div className="space-y-6">
 
 
-            {/* Header */}
+            {/* HEADER */}
 
-            <div className="flex items-center justify-between">
+            <div>
 
-                <div>
+                <h1 className="text-2xl font-bold text-gray-800">
+                    Students
+                </h1>
 
-                    <h1 className="text-2xl font-bold text-gray-800">
-                        Students
-                    </h1>
-
-                    <p className="text-gray-500 mt-1">
-                        Manage all students
-                    </p>
-
-                </div>
+                <p className="text-gray-500 mt-1">
+                    Manage all students
+                </p>
 
             </div>
 
 
-            {/* Search & Filters */}
+
+            {/* FILTERS */}
 
             <div className="bg-white rounded-xl shadow p-5">
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
 
 
-                    {/* Search */}
+                    {/* SEARCH */}
 
                     <div>
 
@@ -143,16 +229,19 @@ function Students () {
 
                         <input
                             type="text"
-                            placeholder="Search by ID, name or roll number"
+                            placeholder="Student ID, name or mobile"
                             value={search}
-                            onChange={(e) => setSearch(e.target.value)}
+                            onChange={(e) =>
+                                setSearch(e.target.value)
+                            }
                             className="w-full border border-gray-300 rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-500"
                         />
 
                     </div>
 
 
-                    {/* Class */}
+
+                    {/* CLASS */}
 
                     <div>
 
@@ -162,7 +251,11 @@ function Students () {
 
                         <select
                             value={classFilter}
-                            onChange={(e) => setClassFilter(e.target.value)}
+                            onChange={(e) =>
+                                handleClassFilterChange(
+                                    e.target.value
+                                )
+                            }
                             className="w-full border border-gray-300 rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-500"
                         >
 
@@ -170,60 +263,24 @@ function Students () {
                                 All Classes
                             </option>
 
-                            <option value="1">
-                                Class 1
-                            </option>
+                            {classes.map((schoolClass) => (
 
-                            <option value="2">
-                                Class 2
-                            </option>
+                                <option
+                                    key={schoolClass.id}
+                                    value={schoolClass.id}
+                                >
+                                    {schoolClass.name}
+                                </option>
 
-                            <option value="3">
-                                Class 3
-                            </option>
-
-                            <option value="4">
-                                Class 4
-                            </option>
-
-                            <option value="5">
-                                Class 5
-                            </option>
-
-                            <option value="6">
-                                Class 6
-                            </option>
-
-                            <option value="7">
-                                Class 7
-                            </option>
-
-                            <option value="8">
-                                Class 8
-                            </option>
-
-                            <option value="9">
-                                Class 9
-                            </option>
-
-                            <option value="10">
-                                Class 10
-                            </option>
-
-                            <option value="11">
-                                Class 11
-                            </option>
-
-                            <option value="12">
-                                Class 12
-                            </option>
+                            ))}
 
                         </select>
 
                     </div>
 
 
-                    {/* Section */}
+
+                    {/* SECTION */}
 
                     <div>
 
@@ -233,7 +290,11 @@ function Students () {
 
                         <select
                             value={sectionFilter}
-                            onChange={(e) => setSectionFilter(e.target.value)}
+                            onChange={(e) =>
+                                setSectionFilter(
+                                    e.target.value
+                                )
+                            }
                             className="w-full border border-gray-300 rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-500"
                         >
 
@@ -241,21 +302,55 @@ function Students () {
                                 All Sections
                             </option>
 
-                            <option value="1">
-                                Section A
+                            {availableSections.map((section) => (
+
+                                <option
+                                    key={section.id}
+                                    value={section.id}
+                                >
+                                    Section {section.name}
+                                </option>
+
+                            ))}
+
+                        </select>
+
+                    </div>
+
+
+
+                    {/* ACADEMIC YEAR */}
+
+                    <div>
+
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Academic Year
+                        </label>
+
+                        <select
+                            value={academicYearFilter}
+                            onChange={(e) =>
+                                setAcademicYearFilter(
+                                    e.target.value
+                                )
+                            }
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2.5 outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+
+                            <option value="all">
+                                All Academic Years
                             </option>
 
-                            <option value="2">
-                                Section B
-                            </option>
+                            {academicYears.map((year) => (
 
-                            <option value="3">
-                                Section C
-                            </option>
+                                <option
+                                    key={year}
+                                    value={year}
+                                >
+                                    {year}
+                                </option>
 
-                            <option value="4">
-                                Section D
-                            </option>
+                            ))}
 
                         </select>
 
@@ -266,7 +361,8 @@ function Students () {
             </div>
 
 
-            {/* Students Table */}
+
+            {/* STUDENT TABLE */}
 
             <div className="bg-white rounded-xl shadow overflow-hidden">
 
@@ -296,11 +392,7 @@ function Students () {
                                 </th>
 
                                 <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">
-                                    Name
-                                </th>
-
-                                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">
-                                    Roll No.
+                                    Student Name
                                 </th>
 
                                 <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">
@@ -312,11 +404,19 @@ function Students () {
                                 </th>
 
                                 <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">
-                                    Admission Date
+                                    Academic Year
                                 </th>
 
                                 <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">
-                                    Actions
+                                    Gender
+                                </th>
+
+                                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">
+                                    Mobile
+                                </th>
+
+                                <th className="text-left px-6 py-4 text-sm font-semibold text-gray-600">
+                                    Action
                                 </th>
 
                             </tr>
@@ -331,7 +431,7 @@ function Students () {
                                 <tr>
 
                                     <td
-                                        colSpan="7"
+                                        colSpan="8"
                                         className="text-center py-10 text-gray-500"
                                     >
                                         No students found
@@ -341,76 +441,85 @@ function Students () {
 
                             ) : (
 
-                                filteredStudents.map((student) => (
+                                filteredStudents.map((student) => {
 
-                                    <tr
-                                        key={student.id}
-                                        className="border-t hover:bg-gray-50"
-                                    >
-
-                                        {/* Student ID */}
-
-                                        <td className="px-6 py-4 font-medium text-gray-800">
-                                            {student.student_id}
-                                        </td>
+                                    const schoolClass =
+                                        classes.find(
+                                            (item) =>
+                                                item.id ===
+                                                student.school_class
+                                        );
 
 
-                                        {/* Name */}
-
-                                        <td className="px-6 py-4">
-
-                                            <div className="font-medium text-gray-800">
-
-                                                {student.user?.first_name || "N/A"}{" "}
-                                                {student.user?.last_name || ""}
-
-                                            </div>
-
-                                            <div className="text-sm text-gray-500">
-
-                                                {student.user?.email || "No email"}
-
-                                            </div>
-
-                                        </td>
+                                    const section =
+                                        sections.find(
+                                            (item) =>
+                                                item.id ===
+                                                student.section
+                                        );
 
 
-                                        {/* Roll Number */}
+                                    return (
 
-                                        <td className="px-6 py-4 text-gray-600">
-                                            {student.roll_number}
-                                        </td>
+                                        <tr
+                                            key={student.id}
+                                            className="border-t hover:bg-gray-50"
+                                        >
 
+                                            {/* STUDENT ID */}
 
-                                        {/* Class */}
-
-                                        <td className="px-6 py-4 text-gray-600">
-                                            {student.school_class?.name || "N/A"}
-                                        </td>
-
-
-                                        {/* Section */}
-
-                                        <td className="px-6 py-4 text-gray-600">
-                                            {student.section?.name || "N/A"}
-                                        </td>
+                                            <td className="px-6 py-4 font-medium text-gray-800">
+                                                {student.student_id || "N/A"}
+                                            </td>
 
 
-                                        {/* Admission Date */}
+                                            {/* NAME */}
 
-                                        <td className="px-6 py-4 text-gray-600">
-                                            {student.admission_date}
-                                        </td>
-
-
-                                        {/* Actions */}
-
-                                        <td className="px-6 py-4">
-
-                                            <div className="flex gap-2">
+                                            <td className="px-6 py-4 text-gray-700">
+                                                {student.admission?.student_name || "N/A"}
+                                            </td>
 
 
-                                                {/* View */}
+                                            {/* CLASS */}
+
+                                            <td className="px-6 py-4 text-gray-600">
+                                                {schoolClass?.name || "N/A"}
+                                            </td>
+
+
+                                            {/* SECTION */}
+
+                                            <td className="px-6 py-4 text-gray-600">
+                                                {section
+                                                    ? `Section ${section.name}`
+                                                    : "N/A"}
+                                            </td>
+
+
+                                            {/* ACADEMIC YEAR */}
+
+                                            <td className="px-6 py-4 text-gray-600">
+                                                {student.admission?.academic_year || "N/A"}
+                                            </td>
+
+
+                                            {/* GENDER */}
+
+                                            <td className="px-6 py-4 text-gray-600">
+                                                {student.admission?.gender || "N/A"}
+                                            </td>
+
+
+                                            {/* MOBILE */}
+
+                                            <td className="px-6 py-4 text-gray-600">
+                                                {student.admission?.student_mobile || "N/A"}
+                                            </td>
+
+
+                                            {/* ACTION */}
+
+                                            <td className="px-6 py-4">
 
                                                 <button
                                                     onClick={() =>
@@ -423,28 +532,13 @@ function Students () {
                                                     View
                                                 </button>
 
+                                            </td>
 
-                                                {/* Edit */}
+                                        </tr>
 
-                                                <button
-                                                    onClick={() =>
-                                                        navigate(
-                                                            `/admin/students/${student.id}/edit`
-                                                        )
-                                                    }
-                                                    className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
-                                                >
-                                                    Edit
-                                                </button>
+                                    );
 
-
-                                            </div>
-
-                                        </td>
-
-                                    </tr>
-
-                                ))
+                                })
 
                             )}
 

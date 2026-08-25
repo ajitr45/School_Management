@@ -2,14 +2,20 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../services/api";
 
-function StudentDetail() {
+function StudentDetail () {
 
     const { id } = useParams();
     const navigate = useNavigate();
 
     const [student, setStudent] = useState(null);
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
+
+    // =========================
+    // GET STUDENT
+    // =========================
 
     useEffect(() => {
 
@@ -17,7 +23,9 @@ function StudentDetail() {
 
             try {
 
-                const response = await api.get(`students/${id}/`);
+                const response = await api.get(
+                    `students/${id}/`
+                );
 
                 setStudent(response.data);
 
@@ -32,6 +40,7 @@ function StudentDetail() {
                 setLoading(false);
 
             }
+
         };
 
         getStudent();
@@ -39,32 +48,70 @@ function StudentDetail() {
     }, [id]);
 
 
+    // =========================
+    // LOADING
+    // =========================
+
     if (loading) {
+
         return (
             <div className="p-6">
+
                 <p className="text-gray-500">
                     Loading student...
                 </p>
+
             </div>
         );
+
     }
 
 
+    // =========================
+    // ERROR
+    // =========================
+
     if (error) {
+
         return (
             <div className="p-6">
+
                 <p className="text-red-600">
                     {error}
                 </p>
+
             </div>
         );
+
     }
 
 
+    if (!student) {
+
+        return (
+            <div className="p-6">
+
+                <p className="text-gray-500">
+                    Student not found
+                </p>
+
+            </div>
+        );
+
+    }
+
+
+    const admission = student.admission;
+
+
     return (
+
         <div className="space-y-6">
 
-            {/* Header */}
+
+            {/* =========================
+                HEADER
+            ========================= */}
 
             <div className="flex items-center justify-between">
 
@@ -75,14 +122,16 @@ function StudentDetail() {
                     </h1>
 
                     <p className="text-gray-500 mt-1">
-                        View student information
+                        View complete student information
                     </p>
 
                 </div>
 
 
                 <button
-                    onClick={() => navigate("/admin/students")}
+                    onClick={() =>
+                        navigate("/admin/students")
+                    }
                     className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
                 >
                     Back
@@ -91,100 +140,344 @@ function StudentDetail() {
             </div>
 
 
-            {/* Basic Information */}
+
+            {/* =========================
+                STUDENT INFORMATION
+            ========================= */}
 
             <div className="bg-white rounded-xl shadow p-6">
 
                 <h2 className="text-lg font-semibold text-gray-800 mb-5">
-                    Basic Information
+                    Student Information
                 </h2>
 
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-                    <div>
-                        <p className="text-sm text-gray-500">
-                            Student ID
-                        </p>
+                    <Info
+                        label="Student ID"
+                        value={student.student_id}
+                    />
 
-                        <p className="font-medium text-gray-800 mt-1">
-                            {student.student_id}
-                        </p>
-                    </div>
+                    <Info
+                        label="Student Name"
+                        value={admission?.student_name}
+                    />
 
+                    <Info
+                        label="Email / Gmail"
+                        value={admission?.student_email}
+                    />
 
-                    <div>
-                        <p className="text-sm text-gray-500">
-                            Name
-                        </p>
+                    <Info
+                        label="Mobile"
+                        value={admission?.student_mobile}
+                    />
 
-                        <p className="font-medium text-gray-800 mt-1">
-                            {student.user?.first_name || "N/A"}{" "}
-                            {student.user?.last_name || ""}
-                        </p>
-                    </div>
+                    <Info
+                        label="Date of Birth"
+                        value={admission?.date_of_birth}
+                    />
 
+                    <Info
+                        label="Gender"
+                        value={admission?.gender}
+                    />
 
-                    <div>
-                        <p className="text-sm text-gray-500">
-                            Email
-                        </p>
+                    <Info
+                        label="Blood Group"
+                        value={admission?.blood_group}
+                    />
 
-                        <p className="font-medium text-gray-800 mt-1">
-                            {student.user?.email || "N/A"}
-                        </p>
-                    </div>
+                    <Info
+                        label="Academic Year"
+                        value={admission?.academic_year}
+                    />
 
+                    <Info
+                        label="Class"
+                        value={student.school_class_detail?.name}
+                    />
 
-                    <div>
-                        <p className="text-sm text-gray-500">
-                            Roll Number
-                        </p>
+                    <Info
+                        label="Section"
+                        value={
+                            student.section_detail
+                                ? `Section ${student.section_detail.name}`
+                                : null
+                        }
+                    />
 
-                        <p className="font-medium text-gray-800 mt-1">
-                            {student.roll_number}
-                        </p>
-                    </div>
+                    <Info
+                        label="Previous School"
+                        value={admission?.previous_school}
+                    />
 
-
-                    <div>
-                        <p className="text-sm text-gray-500">
-                            Class
-                        </p>
-
-                        <p className="font-medium text-gray-800 mt-1">
-                            {student.school_class?.name || "N/A"}
-                        </p>
-                    </div>
-
-
-                    <div>
-                        <p className="text-sm text-gray-500">
-                            Section
-                        </p>
-
-                        <p className="font-medium text-gray-800 mt-1">
-                            {student.section?.name || "N/A"}
-                        </p>
-                    </div>
-
-
-                    <div>
-                        <p className="text-sm text-gray-500">
-                            Admission Date
-                        </p>
-
-                        <p className="font-medium text-gray-800 mt-1">
-                            {student.admission_date}
-                        </p>
-                    </div>
+                    <Info
+                        label="Admission Status"
+                        value={admission?.status}
+                    />
 
                 </div>
+
+            </div>
+
+
+
+            {/* =========================
+                FATHER INFORMATION
+            ========================= */}
+
+            <div className="bg-white rounded-xl shadow p-6">
+
+                <h2 className="text-lg font-semibold text-gray-800 mb-5">
+                    Father Information
+                </h2>
+
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                    <Info
+                        label="Father Name"
+                        value={admission?.father_name}
+                    />
+
+                    <Info
+                        label="Father Occupation"
+                        value={admission?.father_occupation}
+                    />
+
+                </div>
+
+            </div>
+
+
+
+            {/* =========================
+                MOTHER INFORMATION
+            ========================= */}
+
+            <div className="bg-white rounded-xl shadow p-6">
+
+                <h2 className="text-lg font-semibold text-gray-800 mb-5">
+                    Mother Information
+                </h2>
+
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                    <Info
+                        label="Mother Name"
+                        value={admission?.mother_name}
+                    />
+
+                    <Info
+                        label="Mother Occupation"
+                        value={admission?.mother_occupation}
+                    />
+
+                </div>
+
+            </div>
+
+
+
+            {/* =========================
+                GUARDIAN INFORMATION
+            ========================= */}
+
+            <div className="bg-white rounded-xl shadow p-6">
+
+                <h2 className="text-lg font-semibold text-gray-800 mb-5">
+                    Guardian Information
+                </h2>
+
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                    <Info
+                        label="Guardian Mobile"
+                        value={admission?.guardian_mobile}
+                    />
+
+                    <Info
+                        label="Guardian Email"
+                        value={admission?.guardian_email}
+                    />
+
+                </div>
+
+            </div>
+
+
+
+            {/* =========================
+                ADDRESS
+            ========================= */}
+
+            <div className="bg-white rounded-xl shadow p-6">
+
+                <h2 className="text-lg font-semibold text-gray-800 mb-5">
+                    Address Information
+                </h2>
+
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                    <Info
+                        label="Address Line 1"
+                        value={admission?.address_line1}
+                    />
+
+                    <Info
+                        label="Address Line 2"
+                        value={admission?.address_line2}
+                    />
+
+                    <Info
+                        label="City"
+                        value={admission?.city}
+                    />
+
+                    <Info
+                        label="State"
+                        value={admission?.state}
+                    />
+
+                    <Info
+                        label="Pin Code"
+                        value={admission?.pin_code}
+                    />
+
+                </div>
+
+            </div>
+
+
+
+            {/* =========================
+                DOCUMENTS
+            ========================= */}
+
+            <div className="bg-white rounded-xl shadow p-6">
+
+                <h2 className="text-lg font-semibold text-gray-800 mb-5">
+                    Documents
+                </h2>
+
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                    <DocumentLink
+                        label="Birth Certificate"
+                        file={admission?.birth_certificate}
+                    />
+
+                    <DocumentLink
+                        label="Transfer Certificate"
+                        file={admission?.transfer_certificate}
+                    />
+
+                    <DocumentLink
+                        label="Marksheet"
+                        file={admission?.marksheet}
+                    />
+
+                </div>
+
+            </div>
+
+
+
+            {/* =========================
+                EDIT BUTTON
+            ========================= */}
+
+            <div className="flex justify-end">
+
+                <button
+                    onClick={() =>
+                        navigate(
+                            `/admin/students/${student.id}/edit`
+                        )
+                    }
+                    className="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                    Edit Student
+                </button>
 
             </div>
 
         </div>
     );
 }
+
+
+
+// =========================
+// INFO COMPONENT
+// =========================
+
+function Info ({ label, value }) {
+
+    return (
+
+        <div>
+
+            <p className="text-sm text-gray-500">
+                {label}
+            </p>
+
+            <p className="font-medium text-gray-800 mt-1">
+                {value || "N/A"}
+            </p>
+
+        </div>
+
+    );
+}
+
+
+
+// =========================
+// DOCUMENT COMPONENT
+// =========================
+
+function DocumentLink ({ label, file }) {
+
+    return (
+
+        <div className="border rounded-lg p-4">
+
+            <p className="text-sm text-gray-500 mb-2">
+                {label}
+            </p>
+
+
+            {file ? (
+
+                <a
+                    href={file}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-blue-600 hover:underline"
+                >
+                    View Document
+                </a>
+
+            ) : (
+
+                <p className="text-gray-400 text-sm">
+                    Not uploaded
+                </p>
+
+            )}
+
+        </div>
+
+    );
+
+}
+
 
 export default StudentDetail;
