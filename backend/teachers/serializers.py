@@ -46,6 +46,7 @@ class TeacherListSerializer(serializers.ModelSerializer):
         model = Teacher
 
         fields = [
+            "id",
             "teacher_id",
             "full_name",
             "email",
@@ -65,6 +66,7 @@ class TeacherDetailSerializer(serializers.ModelSerializer):
         model = Teacher
 
         fields = [
+            "id",
             "teacher_id",
             "full_name",
             "email",
