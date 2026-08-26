@@ -18,6 +18,11 @@ import TeacherEdit from "./pages/teachers/TeacherEdit";
 import Teachers from "./pages/teachers/Teachers";
 import TeacherAssignment from "./pages/teachers/TeacherAssignment";
 import TeacherAssignments from "./pages/teachers/TeacherAssignments";
+import Attendance from "./pages/attendance/Attendance";
+import AttendanceCreate from "./pages/attendance/AttendanceCreate";
+import AttendanceDetail from "./pages/attendance/AttendanceDetail";
+import AttendanceEdit from "./pages/attendance/AttendanceEdit";
+import Fees from "./pages/fees/Fees";
 
 
 
@@ -72,6 +77,15 @@ function App() {
 
                     <Route path="teachers/assignments" element={<TeacherAssignments />} />
 
+                    <Route path="attendance" element={<Attendance />} />
+
+                    <Route path="attendance/create" element={<AttendanceCreate />} />
+
+                    <Route path="attendance/:id" element={<AttendanceDetail />} />
+
+                    <Route path="attendance/:id/edit" element={<AttendanceEdit />} />
+
+                    <Route path="fees" element={<Fees />} />
                     
 
                 </Route>
