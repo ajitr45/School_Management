@@ -23,6 +23,8 @@ import AttendanceCreate from "./pages/attendance/AttendanceCreate";
 import AttendanceDetail from "./pages/attendance/AttendanceDetail";
 import AttendanceEdit from "./pages/attendance/AttendanceEdit";
 import Fees from "./pages/fees/Fees";
+import Exams from "./pages/Exams/Exams";
+import ReportCard from "./pages/Exams/ReportCard";
 
 
 
@@ -86,6 +88,10 @@ function App() {
                     <Route path="attendance/:id/edit" element={<AttendanceEdit />} />
 
                     <Route path="fees" element={<Fees />} />
+
+                    <Route path="exams" element={<Exams />} />
+
+                    <Route path="exams/report-card/:studentId/:examId" element={<ReportCard />} />
                     
 
                 </Route>
