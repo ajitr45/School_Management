@@ -19,9 +19,9 @@ function Fees () {
     const [showForm, setShowForm] = useState(false);
 
 
-    // =========================
+    // =====================================================
     // FEE STRUCTURE FORM
-    // =========================
+    // =====================================================
 
     const [feeStructureForm, setFeeStructureForm] = useState({
         school_class: "",
@@ -32,9 +32,9 @@ function Fees () {
     });
 
 
-    // =========================
+    // =====================================================
     // STUDENT FEE FORM
-    // =========================
+    // =====================================================
 
     const [studentFeeForm, setStudentFeeForm] = useState({
         student: "",
@@ -42,9 +42,9 @@ function Fees () {
     });
 
 
-    // =========================
+    // =====================================================
     // PAYMENT FORM
-    // =========================
+    // =====================================================
 
     const [paymentForm, setPaymentForm] = useState({
         student_fee: "",
@@ -55,9 +55,9 @@ function Fees () {
     });
 
 
-    // =========================
+    // =====================================================
     // GET DATA
-    // =========================
+    // =====================================================
 
     useEffect(() => {
 
@@ -89,25 +89,55 @@ function Fees () {
                 ]);
 
 
-                setFeeStructures(
+                console.log("STUDENTS API:", studentResponse.data);
+
+
+                // =====================================================
+                // HANDLE PAGINATION
+                // =====================================================
+
+                const studentData = Array.isArray(studentResponse.data)
+                    ? studentResponse.data
+                    : studentResponse.data.results || [];
+
+
+                const feeStructureData = Array.isArray(
                     feeStructureResponse.data
-                );
+                )
+                    ? feeStructureResponse.data
+                    : feeStructureResponse.data.results || [];
 
-                setStudentFees(
+
+                const studentFeeData = Array.isArray(
                     studentFeeResponse.data
-                );
+                )
+                    ? studentFeeResponse.data
+                    : studentFeeResponse.data.results || [];
 
-                setPayments(
+
+                const paymentData = Array.isArray(
                     paymentResponse.data
-                );
+                )
+                    ? paymentResponse.data
+                    : paymentResponse.data.results || [];
 
-                setStudents(
-                    studentResponse.data
-                );
 
-                setClasses(
+                const classData = Array.isArray(
                     classResponse.data
-                );
+                )
+                    ? classResponse.data
+                    : classResponse.data.results || [];
+
+
+                setStudents(studentData);
+
+                setFeeStructures(feeStructureData);
+
+                setStudentFees(studentFeeData);
+
+                setPayments(paymentData);
+
+                setClasses(classData);
 
 
             } catch (error) {
@@ -115,6 +145,7 @@ function Fees () {
                 console.log(error.response?.data);
 
                 setError(
+                    error.response?.data?.detail ||
                     "Failed to load fee data"
                 );
 
@@ -126,14 +157,15 @@ function Fees () {
 
         };
 
+
         getData();
 
     }, []);
 
 
-    // =========================
-    // ADD BUTTON
-    // =========================
+    // =====================================================
+    // ADD
+    // =====================================================
 
     const handleAdd = () => {
 
@@ -179,9 +211,9 @@ function Fees () {
     };
 
 
-    // =========================
+    // =====================================================
     // CANCEL
-    // =========================
+    // =====================================================
 
     const handleCancel = () => {
 
@@ -191,9 +223,9 @@ function Fees () {
     };
 
 
-    // =========================
+    // =====================================================
     // CREATE FEE STRUCTURE
-    // =========================
+    // =====================================================
 
     const createFeeStructure = async (e) => {
 
@@ -209,10 +241,12 @@ function Fees () {
                 feeStructureForm
             );
 
+
             setFeeStructures((prev) => [
                 ...prev,
                 response.data,
             ]);
+
 
             setShowForm(false);
 
@@ -235,9 +269,9 @@ function Fees () {
     };
 
 
-    // =========================
+    // =====================================================
     // CREATE STUDENT FEE
-    // =========================
+    // =====================================================
 
     const createStudentFee = async (e) => {
 
@@ -253,10 +287,12 @@ function Fees () {
                 studentFeeForm
             );
 
+
             setStudentFees((prev) => [
                 ...prev,
                 response.data,
             ]);
+
 
             setShowForm(false);
 
@@ -265,6 +301,7 @@ function Fees () {
             console.log(error.response?.data);
 
             setError(
+                error.response?.data?.non_field_errors?.[0] ||
                 error.response?.data?.detail ||
                 "Failed to assign fee"
             );
@@ -278,9 +315,9 @@ function Fees () {
     };
 
 
-    // =========================
+    // =====================================================
     // CREATE PAYMENT
-    // =========================
+    // =====================================================
 
     const createPayment = async (e) => {
 
@@ -296,22 +333,25 @@ function Fees () {
                 paymentForm
             );
 
+
             setPayments((prev) => [
                 ...prev,
                 response.data,
             ]);
 
 
-            // Payment ke baad student fee ka
-            // status change ho sakta hai.
-
             const studentFeeResponse =
                 await api.get("fees/student-fees/");
 
-            setStudentFees(
-                studentFeeResponse.data
-            );
 
+            const studentFeeData = Array.isArray(
+                studentFeeResponse.data
+            )
+                ? studentFeeResponse.data
+                : studentFeeResponse.data.results || [];
+
+
+            setStudentFees(studentFeeData);
 
             setShowForm(false);
 
@@ -334,9 +374,9 @@ function Fees () {
     };
 
 
-    // =========================
+    // =====================================================
     // LOADING
-    // =========================
+    // =====================================================
 
     if (loading) {
 
@@ -358,9 +398,9 @@ function Fees () {
         <div className="space-y-6">
 
 
-            {/* =========================
+            {/* =====================================================
                 HEADER
-            ========================= */}
+            ===================================================== */}
 
             <div className="flex items-center justify-between">
 
@@ -387,9 +427,9 @@ function Fees () {
             </div>
 
 
-            {/* =========================
+            {/* =====================================================
                 ERROR
-            ========================= */}
+            ===================================================== */}
 
             {error && (
 
@@ -400,9 +440,9 @@ function Fees () {
             )}
 
 
-            {/* =========================
+            {/* =====================================================
                 TABS
-            ========================= */}
+            ===================================================== */}
 
             <div className="bg-white rounded-xl shadow">
 
@@ -509,6 +549,7 @@ function Fees () {
                                             <option value="">
                                                 Select Class
                                             </option>
+
 
                                             {classes.map(
                                                 (schoolClass) => (
@@ -656,6 +697,7 @@ function Fees () {
                                                             fee.school_class
                                                     );
 
+
                                                 return (
 
                                                     <tr key={fee.id}>
@@ -734,7 +776,9 @@ function Fees () {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
 
-                                        {/* STUDENT */}
+                                        {/* =====================================================
+                                            STUDENT
+                                        ===================================================== */}
 
                                         <select
                                             value={
@@ -755,6 +799,7 @@ function Fees () {
                                                 Select Student
                                             </option>
 
+
                                             {students.map(
                                                 (student) => (
 
@@ -762,9 +807,15 @@ function Fees () {
                                                         key={student.id}
                                                         value={student.id}
                                                     >
-                                                        {student.student_name ||
-                                                            student.full_name ||
-                                                            student.name}
+
+                                                        {student.student_id ||
+                                                            `ID-${student.id}`}
+
+                                                        {" - "}
+
+                                                        {student.admission?.student_name ||
+                                                            "Student"}
+
                                                     </option>
 
                                                 )
@@ -773,7 +824,9 @@ function Fees () {
                                         </select>
 
 
-                                        {/* FEE STRUCTURE */}
+                                        {/* =====================================================
+                                            FEE STRUCTURE
+                                        ===================================================== */}
 
                                         <select
                                             value={
@@ -794,6 +847,7 @@ function Fees () {
                                                 Select Fee Structure
                                             </option>
 
+
                                             {feeStructures.map(
                                                 (fee) => {
 
@@ -804,18 +858,25 @@ function Fees () {
                                                                 fee.school_class
                                                         );
 
+
                                                     return (
 
                                                         <option
                                                             key={fee.id}
                                                             value={fee.id}
                                                         >
+
                                                             {schoolClass?.name ||
                                                                 `Class #${fee.school_class}`}
+
                                                             {" - "}
+
                                                             {fee.academic_year}
+
                                                             {" - ₹"}
+
                                                             {fee.amount}
+
                                                         </option>
 
                                                     );
@@ -844,6 +905,11 @@ function Fees () {
                             </h2>
 
 
+                            <p className="text-sm text-gray-500 mb-4">
+                                {studentFees.length} student fee records
+                            </p>
+
+
                             <Table>
 
                                 <thead className="bg-gray-50">
@@ -851,7 +917,8 @@ function Fees () {
                                     <tr>
 
                                         <Th>#</Th>
-                                        <Th>Student</Th>
+                                        <Th>Student ID</Th>
+                                        <Th>Student Name</Th>
                                         <Th>Fee Structure</Th>
                                         <Th>Amount</Th>
                                         <Th>Status</Th>
@@ -866,7 +933,7 @@ function Fees () {
                                     {studentFees.length === 0 ? (
 
                                         <EmptyRow
-                                            colSpan="5"
+                                            colSpan="6"
                                             text="No student fees found."
                                         />
 
@@ -882,12 +949,14 @@ function Fees () {
                                                             fee.fee_structure
                                                     );
 
+
                                                 const schoolClass =
                                                     classes.find(
                                                         (item) =>
                                                             item.id ===
                                                             structure?.school_class
                                                     );
+
 
                                                 return (
 
@@ -897,6 +966,21 @@ function Fees () {
                                                             {index + 1}
                                                         </Td>
 
+
+                                                        {/* STUDENT ID */}
+
+                                                        <Td>
+
+                                                            <span className="font-medium text-blue-600">
+                                                                {fee.student_id ||
+                                                                    `ID-${fee.student}`}
+                                                            </span>
+
+                                                        </Td>
+
+
+                                                        {/* STUDENT NAME */}
+
                                                         <Td>
 
                                                             <span className="font-medium text-gray-800">
@@ -905,6 +989,9 @@ function Fees () {
                                                             </span>
 
                                                         </Td>
+
+
+                                                        {/* FEE STRUCTURE */}
 
                                                         <Td>
 
@@ -919,11 +1006,19 @@ function Fees () {
 
                                                         </Td>
 
+
+                                                        {/* AMOUNT */}
+
                                                         <Td>
+
                                                             ₹
                                                             {structure?.amount ||
                                                                 "-"}
+
                                                         </Td>
+
+
+                                                        {/* STATUS */}
 
                                                         <Td>
 
@@ -997,6 +1092,7 @@ function Fees () {
                                                 Select Student
                                             </option>
 
+
                                             {studentFees
                                                 .filter(
                                                     (fee) =>
@@ -1013,6 +1109,7 @@ function Fees () {
                                                                     fee.fee_structure
                                                             );
 
+
                                                         const schoolClass =
                                                             classes.find(
                                                                 (item) =>
@@ -1020,12 +1117,18 @@ function Fees () {
                                                                     structure?.school_class
                                                             );
 
+
                                                         return (
 
                                                             <option
                                                                 key={fee.id}
                                                                 value={fee.id}
                                                             >
+
+                                                                {fee.student_id ||
+                                                                    `ID-${fee.student}`}
+
+                                                                {" - "}
 
                                                                 {fee.student_name ||
                                                                     "Student"}
@@ -1171,7 +1274,8 @@ function Fees () {
                                     <tr>
 
                                         <Th>#</Th>
-                                        <Th>Student</Th>
+                                        <Th>Student ID</Th>
+                                        <Th>Student Name</Th>
                                         <Th>Class</Th>
                                         <Th>Amount</Th>
                                         <Th>Method</Th>
@@ -1188,7 +1292,7 @@ function Fees () {
                                     {payments.length === 0 ? (
 
                                         <EmptyRow
-                                            colSpan="7"
+                                            colSpan="8"
                                             text="No payments found."
                                         />
 
@@ -1204,12 +1308,14 @@ function Fees () {
                                                             payment.student_fee
                                                     );
 
+
                                                 const structure =
                                                     feeStructures.find(
                                                         (fee) =>
                                                             fee.id ===
                                                             studentFee?.fee_structure
                                                     );
+
 
                                                 const schoolClass =
                                                     classes.find(
@@ -1218,6 +1324,7 @@ function Fees () {
                                                             structure?.school_class
                                                     );
 
+
                                                 return (
 
                                                     <tr key={payment.id}>
@@ -1225,6 +1332,15 @@ function Fees () {
                                                         <Td>
                                                             {index + 1}
                                                         </Td>
+
+
+                                                        <Td>
+
+                                                            {studentFee?.student_id ||
+                                                                `ID-${studentFee?.student}`}
+
+                                                        </Td>
+
 
                                                         <Td>
 
@@ -1236,25 +1352,40 @@ function Fees () {
 
                                                         </Td>
 
+
                                                         <Td>
+
                                                             {schoolClass?.name ||
                                                                 "-"}
+
                                                         </Td>
 
+
                                                         <Td>
+
                                                             ₹{payment.amount}
+
                                                         </Td>
 
+
                                                         <Td>
+
                                                             {payment.payment_method}
+
                                                         </Td>
 
+
                                                         <Td>
+
                                                             {payment.receipt_number}
+
                                                         </Td>
 
+
                                                         <Td>
+
                                                             {payment.payment_date}
+
                                                         </Td>
 
                                                     </tr>
@@ -1279,7 +1410,9 @@ function Fees () {
             </div>
 
         </div>
+
     );
+
 }
 
 
@@ -1302,7 +1435,11 @@ function FormButtons ({
                 disabled={saving}
                 className="px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
             >
-                {saving ? "Saving..." : saveText}
+
+                {saving
+                    ? "Saving..."
+                    : saveText}
+
             </button>
 
 
@@ -1317,6 +1454,7 @@ function FormButtons ({
         </div>
 
     );
+
 }
 
 
@@ -1437,6 +1575,7 @@ function Status ({ status }) {
                 "bg-gray-100 text-gray-600"
                 }`}
         >
+
             {status}
 
         </span>
