@@ -12,31 +12,46 @@ function Exams () {
 
 
     // =====================================================
-    // EXAMS
+    // DATA
     // =====================================================
 
     const [exams, setExams] = useState([]);
-
-    const [loadingExams, setLoadingExams] = useState(true);
-
-
-    // =====================================================
-    // EXAM SUBJECTS
-    // =====================================================
-
     const [examSubjects, setExamSubjects] = useState([]);
-
-    const [loadingExamSubjects, setLoadingExamSubjects] = useState(true);
-
-
-    // =====================================================
-    // STUDENT RESULTS
-    // =====================================================
-
     const [studentResults, setStudentResults] = useState([]);
 
+    const [students, setStudents] = useState([]);
+    const [classes, setClasses] = useState([]);
+    const [subjects, setSubjects] = useState([]);
+
+
+    // =====================================================
+    // LOADING
+    // =====================================================
+
+    const [loadingExams, setLoadingExams] = useState(true);
+    const [loadingExamSubjects, setLoadingExamSubjects] = useState(true);
     const [loadingStudentResults, setLoadingStudentResults] =
         useState(true);
+
+    const [loadingStudents, setLoadingStudents] = useState(true);
+    const [loadingClasses, setLoadingClasses] = useState(true);
+    const [loadingSubjects, setLoadingSubjects] = useState(true);
+
+
+    // =====================================================
+    // MODAL
+    // =====================================================
+
+    const [showExamForm, setShowExamForm] = useState(false);
+    const [showExamSubjectForm, setShowExamSubjectForm] = useState(false);
+    const [showStudentResultForm, setShowStudentResultForm] = useState(false);
+
+
+    // =====================================================
+    // SUBMIT LOADING
+    // =====================================================
+
+    const [submitting, setSubmitting] = useState(false);
 
 
     // =====================================================
@@ -44,6 +59,50 @@ function Exams () {
     // =====================================================
 
     const [error, setError] = useState("");
+
+
+    // =====================================================
+    // SUCCESS
+    // =====================================================
+
+    const [success, setSuccess] = useState("");
+
+
+    // =====================================================
+    // EXAM FORM
+    // =====================================================
+
+    const [examForm, setExamForm] = useState({
+        name: "",
+        school_class: "",
+        academic_year: "",
+        start_date: "",
+        end_date: "",
+    });
+
+
+    // =====================================================
+    // EXAM SUBJECT FORM
+    // =====================================================
+
+    const [examSubjectForm, setExamSubjectForm] = useState({
+        exam: "",
+        subject: "",
+        maximum_marks: "",
+        pass_marks: "",
+    });
+
+
+    // =====================================================
+    // STUDENT RESULT FORM
+    // =====================================================
+
+    const [studentResultForm, setStudentResultForm] = useState({
+        student: "",
+        exam_subject: "",
+        marks_obtained: "",
+        remarks: "",
+    });
 
 
     // =====================================================
@@ -55,11 +114,8 @@ function Exams () {
         try {
 
             setLoadingExams(true);
-            setError("");
 
             const response = await api.get("exams/exams/");
-
-            console.log("EXAMS API:", response.data);
 
             setExams(
                 Array.isArray(response.data)
@@ -69,14 +125,9 @@ function Exams () {
 
         } catch (error) {
 
-            console.log(
-                "EXAMS ERROR:",
-                error.response?.data
-            );
+            console.log("EXAMS ERROR:", error.response?.data);
 
-            setError(
-                "Failed to load exams."
-            );
+            setError("Failed to load exams.");
 
         } finally {
 
@@ -100,11 +151,6 @@ function Exams () {
                 "exams/exam-subjects/"
             );
 
-            console.log(
-                "EXAM SUBJECTS API:",
-                response.data
-            );
-
             setExamSubjects(
                 Array.isArray(response.data)
                     ? response.data
@@ -114,13 +160,11 @@ function Exams () {
         } catch (error) {
 
             console.log(
-                "EXAM SUBJECTS ERROR:",
+                "EXAM SUBJECT ERROR:",
                 error.response?.data
             );
 
-            setError(
-                "Failed to load exam subjects."
-            );
+            setError("Failed to load exam subjects.");
 
         } finally {
 
@@ -144,11 +188,6 @@ function Exams () {
                 "exams/student-results/"
             );
 
-            console.log(
-                "STUDENT RESULTS API:",
-                response.data
-            );
-
             setStudentResults(
                 Array.isArray(response.data)
                     ? response.data
@@ -158,17 +197,126 @@ function Exams () {
         } catch (error) {
 
             console.log(
-                "STUDENT RESULTS ERROR:",
+                "STUDENT RESULT ERROR:",
                 error.response?.data
             );
 
-            setError(
-                "Failed to load student results."
-            );
+            setError("Failed to load student results.");
 
         } finally {
 
             setLoadingStudentResults(false);
+
+        }
+    };
+
+
+    // =====================================================
+    // LOAD STUDENTS
+    // =====================================================
+
+    const loadStudents = async () => {
+
+        try {
+
+            setLoadingStudents(true);
+
+            const response = await api.get(
+                "students/"
+            );
+
+            setStudents(
+                Array.isArray(response.data)
+                    ? response.data
+                    : response.data.results || []
+            );
+
+        } catch (error) {
+
+            console.log(
+                "STUDENTS ERROR:",
+                error.response?.data
+            );
+
+            setError("Failed to load students.");
+
+        } finally {
+
+            setLoadingStudents(false);
+
+        }
+    };
+
+
+    // =====================================================
+    // LOAD CLASSES
+    // =====================================================
+
+    const loadClasses = async () => {
+
+        try {
+
+            setLoadingClasses(true);
+
+            const response = await api.get(
+                "academics/classes/"
+            );
+
+            setClasses(
+                Array.isArray(response.data)
+                    ? response.data
+                    : response.data.results || []
+            );
+
+        } catch (error) {
+
+            console.log(
+                "CLASSES ERROR:",
+                error.response?.data
+            );
+
+            setError("Failed to load classes.");
+
+        } finally {
+
+            setLoadingClasses(false);
+
+        }
+    };
+
+
+    // =====================================================
+    // LOAD SUBJECTS
+    // =====================================================
+
+    const loadSubjects = async () => {
+
+        try {
+
+            setLoadingSubjects(true);
+
+            const response = await api.get(
+                "academics/subjects/"
+            );
+
+            setSubjects(
+                Array.isArray(response.data)
+                    ? response.data
+                    : response.data.results || []
+            );
+
+        } catch (error) {
+
+            console.log(
+                "SUBJECTS ERROR:",
+                error.response?.data
+            );
+
+            setError("Failed to load subjects.");
+
+        } finally {
+
+            setLoadingSubjects(false);
 
         }
     };
@@ -184,7 +332,258 @@ function Exams () {
         loadExamSubjects();
         loadStudentResults();
 
+        loadStudents();
+        loadClasses();
+        loadSubjects();
+
     }, []);
+
+
+    // =====================================================
+    // CLEAR MESSAGES
+    // =====================================================
+
+    const clearMessages = () => {
+
+        setError("");
+        setSuccess("");
+
+    };
+
+
+    // =====================================================
+    // OPEN EXAM FORM
+    // =====================================================
+
+    const openExamForm = () => {
+
+        clearMessages();
+
+        setExamForm({
+            name: "",
+            school_class: "",
+            academic_year: "",
+            start_date: "",
+            end_date: "",
+        });
+
+        setShowExamForm(true);
+
+    };
+
+
+    // =====================================================
+    // OPEN EXAM SUBJECT FORM
+    // =====================================================
+
+    const openExamSubjectForm = () => {
+
+        clearMessages();
+
+        setExamSubjectForm({
+            exam: "",
+            subject: "",
+            maximum_marks: "",
+            pass_marks: "",
+        });
+
+        setShowExamSubjectForm(true);
+
+    };
+
+
+    // =====================================================
+    // OPEN STUDENT RESULT FORM
+    // =====================================================
+
+    const openStudentResultForm = () => {
+
+        clearMessages();
+
+        setStudentResultForm({
+            student: "",
+            exam_subject: "",
+            marks_obtained: "",
+            remarks: "",
+        });
+
+        setShowStudentResultForm(true);
+
+    };
+
+
+    // =====================================================
+    // CREATE EXAM
+    // =====================================================
+
+    const createExam = async (e) => {
+
+        e.preventDefault();
+
+        try {
+
+            setSubmitting(true);
+            clearMessages();
+
+            await api.post(
+                "exams/exams/",
+                {
+                    name: examForm.name,
+                    school_class: Number(
+                        examForm.school_class
+                    ),
+                    academic_year: examForm.academic_year,
+                    start_date: examForm.start_date,
+                    end_date: examForm.end_date,
+                }
+            );
+
+            setShowExamForm(false);
+
+            setSuccess(
+                "Exam created successfully."
+            );
+
+            await loadExams();
+
+        } catch (error) {
+
+            console.log(
+                "CREATE EXAM ERROR:",
+                error.response?.data
+            );
+
+            setError(
+                getApiError(error)
+            );
+
+        } finally {
+
+            setSubmitting(false);
+
+        }
+    };
+
+
+    // =====================================================
+    // CREATE EXAM SUBJECT
+    // =====================================================
+
+    const createExamSubject = async (e) => {
+
+        e.preventDefault();
+
+        try {
+
+            setSubmitting(true);
+            clearMessages();
+
+            await api.post(
+                "exams/exam-subjects/",
+                {
+                    exam: Number(
+                        examSubjectForm.exam
+                    ),
+
+                    subject: Number(
+                        examSubjectForm.subject
+                    ),
+
+                    maximum_marks: Number(
+                        examSubjectForm.maximum_marks
+                    ),
+
+                    pass_marks: Number(
+                        examSubjectForm.pass_marks
+                    ),
+                }
+            );
+
+            setShowExamSubjectForm(false);
+
+            setSuccess(
+                "Exam subject created successfully."
+            );
+
+            await loadExamSubjects();
+
+        } catch (error) {
+
+            console.log(
+                "CREATE EXAM SUBJECT ERROR:",
+                error.response?.data
+            );
+
+            setError(
+                getApiError(error)
+            );
+
+        } finally {
+
+            setSubmitting(false);
+
+        }
+    };
+
+
+    // =====================================================
+    // CREATE STUDENT RESULT
+    // =====================================================
+
+    const createStudentResult = async (e) => {
+
+        e.preventDefault();
+
+        try {
+
+            setSubmitting(true);
+            clearMessages();
+
+            await api.post(
+                "exams/student-results/",
+                {
+                    student: Number(
+                        studentResultForm.student
+                    ),
+
+                    exam_subject: Number(
+                        studentResultForm.exam_subject
+                    ),
+
+                    marks_obtained: Number(
+                        studentResultForm.marks_obtained
+                    ),
+
+                    remarks:
+                        studentResultForm.remarks || "",
+                }
+            );
+
+            setShowStudentResultForm(false);
+
+            setSuccess(
+                "Student result created successfully."
+            );
+
+            await loadStudentResults();
+
+        } catch (error) {
+
+            console.log(
+                "CREATE STUDENT RESULT ERROR:",
+                error.response?.data
+            );
+
+            setError(
+                getApiError(error)
+            );
+
+        } finally {
+
+            setSubmitting(false);
+
+        }
+    };
 
 
     // =====================================================
@@ -194,7 +593,8 @@ function Exams () {
     const changeTab = (tab) => {
 
         setActiveTab(tab);
-        setError("");
+
+        clearMessages();
 
     };
 
@@ -208,35 +608,30 @@ function Exams () {
                 HEADER
             ===================================================== */}
 
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
 
-                <div>
+                <h1 className="text-3xl font-bold text-gray-800">
+                    Exams
+                </h1>
 
-                    <h1 className="text-3xl font-bold text-gray-800">
-                        Exams
-                    </h1>
-
-                    <p className="text-gray-500 mt-1">
-                        Manage exams, subjects and student results
-                    </p>
-
-                </div>
-
-
-                {/* ADD BUTTON */}
-
-                {activeTab !== "report" && (
-
-                    <button
-                        type="button"
-                        className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
-                    >
-                        + Add
-                    </button>
-
-                )}
+                <p className="text-gray-500 mt-1">
+                    Manage exams, subjects and student results
+                </p>
 
             </div>
+
+
+            {/* =====================================================
+                SUCCESS
+            ===================================================== */}
+
+            {success && (
+
+                <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
+                    {success}
+                </div>
+
+            )}
 
 
             {/* =====================================================
@@ -266,60 +661,36 @@ function Exams () {
                 <div className="flex overflow-x-auto border-b">
 
 
-                    {/* EXAMS TAB */}
-
-                    <button
-                        type="button"
+                    <TabButton
+                        active={activeTab === "exams"}
                         onClick={() => changeTab("exams")}
-                        className={`px-9 py-5 text-lg font-semibold whitespace-nowrap ${activeTab === "exams"
-                                ? "text-blue-600 border-b-2 border-blue-600"
-                                : "text-gray-500 hover:text-gray-700"
-                            }`}
                     >
                         Exams
-                    </button>
+                    </TabButton>
 
 
-                    {/* EXAM SUBJECTS TAB */}
-
-                    <button
-                        type="button"
+                    <TabButton
+                        active={activeTab === "subjects"}
                         onClick={() => changeTab("subjects")}
-                        className={`px-9 py-5 text-lg font-semibold whitespace-nowrap ${activeTab === "subjects"
-                                ? "text-blue-600 border-b-2 border-blue-600"
-                                : "text-gray-500 hover:text-gray-700"
-                            }`}
                     >
                         Exam Subjects
-                    </button>
+                    </TabButton>
 
 
-                    {/* STUDENT RESULTS TAB */}
-
-                    <button
-                        type="button"
+                    <TabButton
+                        active={activeTab === "results"}
                         onClick={() => changeTab("results")}
-                        className={`px-9 py-5 text-lg font-semibold whitespace-nowrap ${activeTab === "results"
-                                ? "text-blue-600 border-b-2 border-blue-600"
-                                : "text-gray-500 hover:text-gray-700"
-                            }`}
                     >
                         Student Results
-                    </button>
+                    </TabButton>
 
 
-                    {/* REPORT CARD TAB */}
-
-                    <button
-                        type="button"
+                    <TabButton
+                        active={activeTab === "report"}
                         onClick={() => changeTab("report")}
-                        className={`px-9 py-5 text-lg font-semibold whitespace-nowrap ${activeTab === "report"
-                                ? "text-blue-600 border-b-2 border-blue-600"
-                                : "text-gray-500 hover:text-gray-700"
-                            }`}
                     >
                         Report Card
-                    </button>
+                    </TabButton>
 
                 </div>
 
@@ -337,10 +708,21 @@ function Exams () {
 
                     {activeTab === "exams" && (
 
-                        <ExamList
-                            exams={exams}
-                            loading={loadingExams}
-                        />
+                        <div>
+
+                            <SectionHeader
+                                title="Exams"
+                                count={exams.length}
+                                buttonText="+ Add Exam"
+                                onClick={openExamForm}
+                            />
+
+                            <ExamList
+                                exams={exams}
+                                loading={loadingExams}
+                            />
+
+                        </div>
 
                     )}
 
@@ -351,10 +733,21 @@ function Exams () {
 
                     {activeTab === "subjects" && (
 
-                        <ExamSubjectList
-                            examSubjects={examSubjects}
-                            loading={loadingExamSubjects}
-                        />
+                        <div>
+
+                            <SectionHeader
+                                title="Exam Subjects"
+                                count={examSubjects.length}
+                                buttonText="+ Add Exam Subject"
+                                onClick={openExamSubjectForm}
+                            />
+
+                            <ExamSubjectList
+                                examSubjects={examSubjects}
+                                loading={loadingExamSubjects}
+                            />
+
+                        </div>
 
                     )}
 
@@ -365,10 +758,21 @@ function Exams () {
 
                     {activeTab === "results" && (
 
-                        <StudentResultList
-                            studentResults={studentResults}
-                            loading={loadingStudentResults}
-                        />
+                        <div>
+
+                            <SectionHeader
+                                title="Student Results"
+                                count={studentResults.length}
+                                buttonText="+ Add Result"
+                                onClick={openStudentResultForm}
+                            />
+
+                            <StudentResultList
+                                studentResults={studentResults}
+                                loading={loadingStudentResults}
+                            />
+
+                        </div>
 
                     )}
 
@@ -387,9 +791,474 @@ function Exams () {
 
             </div>
 
+
+            {/* =====================================================
+                EXAM MODAL
+            ===================================================== */}
+
+            {showExamForm && (
+
+                <Modal
+                    title="Add Exam"
+                    onClose={() => setShowExamForm(false)}
+                >
+
+                    <form
+                        onSubmit={createExam}
+                        className="space-y-4"
+                    >
+
+                        <Input
+                            label="Exam Name"
+                            value={examForm.name}
+                            onChange={(e) =>
+                                setExamForm({
+                                    ...examForm,
+                                    name: e.target.value,
+                                })
+                            }
+                            placeholder="e.g. Half Yearly Examination"
+                            required
+                        />
+
+
+                        <Select
+                            label="Class"
+                            value={examForm.school_class}
+                            onChange={(e) =>
+                                setExamForm({
+                                    ...examForm,
+                                    school_class: e.target.value,
+                                })
+                            }
+                            required
+                        >
+
+                            <option value="">
+                                Select Class
+                            </option>
+
+                            {classes.map((item) => (
+
+                                <option
+                                    key={item.id}
+                                    value={item.id}
+                                >
+                                    {item.name}
+                                </option>
+
+                            ))}
+
+                        </Select>
+
+
+                        <Input
+                            label="Academic Year"
+                            value={examForm.academic_year}
+                            onChange={(e) =>
+                                setExamForm({
+                                    ...examForm,
+                                    academic_year:
+                                        e.target.value,
+                                })
+                            }
+                            placeholder="e.g. 2026-27"
+                            required
+                        />
+
+
+                        <Input
+                            type="date"
+                            label="Start Date"
+                            value={examForm.start_date}
+                            onChange={(e) =>
+                                setExamForm({
+                                    ...examForm,
+                                    start_date:
+                                        e.target.value,
+                                })
+                            }
+                            required
+                        />
+
+
+                        <Input
+                            type="date"
+                            label="End Date"
+                            value={examForm.end_date}
+                            onChange={(e) =>
+                                setExamForm({
+                                    ...examForm,
+                                    end_date:
+                                        e.target.value,
+                                })
+                            }
+                            required
+                        />
+
+
+                        <ModalButtons
+                            submitting={submitting}
+                            onCancel={() =>
+                                setShowExamForm(false)
+                            }
+                        />
+
+                    </form>
+
+                </Modal>
+
+            )}
+
+
+            {/* =====================================================
+                EXAM SUBJECT MODAL
+            ===================================================== */}
+
+            {showExamSubjectForm && (
+
+                <Modal
+                    title="Add Exam Subject"
+                    onClose={() =>
+                        setShowExamSubjectForm(false)
+                    }
+                >
+
+                    <form
+                        onSubmit={createExamSubject}
+                        className="space-y-4"
+                    >
+
+                        <Select
+                            label="Exam"
+                            value={examSubjectForm.exam}
+                            onChange={(e) =>
+                                setExamSubjectForm({
+                                    ...examSubjectForm,
+                                    exam: e.target.value,
+                                })
+                            }
+                            required
+                        >
+
+                            <option value="">
+                                Select Exam
+                            </option>
+
+                            {exams.map((exam) => (
+
+                                <option
+                                    key={exam.id}
+                                    value={exam.id}
+                                >
+
+                                    {exam.name}
+                                    {" - "}
+                                    {exam.academic_year}
+
+                                </option>
+
+                            ))}
+
+                        </Select>
+
+
+                        <Select
+                            label="Subject"
+                            value={examSubjectForm.subject}
+                            onChange={(e) =>
+                                setExamSubjectForm({
+                                    ...examSubjectForm,
+                                    subject: e.target.value,
+                                })
+                            }
+                            required
+                        >
+
+                            <option value="">
+                                Select Subject
+                            </option>
+
+                            {subjects.map((subject) => (
+
+                                <option
+                                    key={subject.id}
+                                    value={subject.id}
+                                >
+
+                                    {subject.name}
+
+                                </option>
+
+                            ))}
+
+                        </Select>
+
+
+                        <Input
+                            type="number"
+                            label="Maximum Marks"
+                            value={
+                                examSubjectForm.maximum_marks
+                            }
+                            onChange={(e) =>
+                                setExamSubjectForm({
+                                    ...examSubjectForm,
+                                    maximum_marks:
+                                        e.target.value,
+                                })
+                            }
+                            min="1"
+                            required
+                        />
+
+
+                        <Input
+                            type="number"
+                            label="Pass Marks"
+                            value={
+                                examSubjectForm.pass_marks
+                            }
+                            onChange={(e) =>
+                                setExamSubjectForm({
+                                    ...examSubjectForm,
+                                    pass_marks:
+                                        e.target.value,
+                                })
+                            }
+                            min="0"
+                            required
+                        />
+
+
+                        <ModalButtons
+                            submitting={submitting}
+                            onCancel={() =>
+                                setShowExamSubjectForm(false)
+                            }
+                        />
+
+                    </form>
+
+                </Modal>
+
+            )}
+
+
+            {/* =====================================================
+                STUDENT RESULT MODAL
+            ===================================================== */}
+
+            {showStudentResultForm && (
+
+                <Modal
+                    title="Add Student Result"
+                    onClose={() =>
+                        setShowStudentResultForm(false)
+                    }
+                >
+
+                    <form
+                        onSubmit={createStudentResult}
+                        className="space-y-4"
+                    >
+
+                        {/* STUDENT */}
+
+                        <Select
+                            label="Student"
+                            value={
+                                studentResultForm.student
+                            }
+                            onChange={(e) =>
+                                setStudentResultForm({
+                                    ...studentResultForm,
+                                    student: e.target.value,
+                                })
+                            }
+                            required
+                        >
+
+                            <option value="">
+                                Select Student
+                            </option>
+
+                            {students.map((student) => (
+
+                                <option
+                                    key={student.id}
+                                    value={student.id}
+                                >
+
+                                    {student.student_id}
+                                    {" - "}
+
+                                    {
+                                        student.admission
+                                            ?.student_name ||
+                                        student.student_name ||
+                                        student.name ||
+                                        "Student"
+                                    }
+
+                                </option>
+
+                            ))}
+
+                        </Select>
+
+
+                        {/* EXAM SUBJECT */}
+
+                        <Select
+                            label="Exam Subject"
+                            value={
+                                studentResultForm.exam_subject
+                            }
+                            onChange={(e) =>
+                                setStudentResultForm({
+                                    ...studentResultForm,
+                                    exam_subject:
+                                        e.target.value,
+                                })
+                            }
+                            required
+                        >
+
+                            <option value="">
+                                Select Exam Subject
+                            </option>
+
+                            {examSubjects.map(
+                                (examSubject) => (
+
+                                    <option
+                                        key={examSubject.id}
+                                        value={examSubject.id}
+                                    >
+
+                                        {
+                                            examSubject.exam_name ||
+                                            examSubject.exam
+                                        }
+
+                                        {" - "}
+
+                                        {
+                                            examSubject.subject_name ||
+                                            examSubject.subject
+                                        }
+
+                                    </option>
+
+                                )
+                            )}
+
+                        </Select>
+
+
+                        <Input
+                            type="number"
+                            label="Marks Obtained"
+                            value={
+                                studentResultForm.marks_obtained
+                            }
+                            onChange={(e) =>
+                                setStudentResultForm({
+                                    ...studentResultForm,
+                                    marks_obtained:
+                                        e.target.value,
+                                })
+                            }
+                            min="0"
+                            required
+                        />
+
+
+                        <div>
+
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Remarks
+                            </label>
+
+                            <textarea
+                                value={
+                                    studentResultForm.remarks
+                                }
+                                onChange={(e) =>
+                                    setStudentResultForm({
+                                        ...studentResultForm,
+                                        remarks:
+                                            e.target.value,
+                                    })
+                                }
+                                rows="3"
+                                placeholder="Optional remarks"
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+
+                        </div>
+
+
+                        <ModalButtons
+                            submitting={submitting}
+                            onCancel={() =>
+                                setShowStudentResultForm(false)
+                            }
+                        />
+
+                    </form>
+
+                </Modal>
+
+            )}
+
         </div>
 
     );
+
+}
+
+
+// =============================================================
+// SECTION HEADER
+// =============================================================
+
+function SectionHeader ({
+    title,
+    count,
+    buttonText,
+    onClick,
+}) {
+
+    return (
+
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+
+            <div>
+
+                <h2 className="text-2xl font-bold text-gray-800">
+                    {title}
+                </h2>
+
+                <p className="text-gray-500 mt-1">
+                    {count} records
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                onClick={onClick}
+                className="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
+            >
+                {buttonText}
+            </button>
+
+        </div>
+
+    );
+
 }
 
 
@@ -405,141 +1274,90 @@ function ExamList ({
     if (loading) {
 
         return (
-
-            <div className="py-12 text-center text-gray-500">
-                Loading exams...
-            </div>
-
+            <Loading text="Loading exams..." />
         );
 
     }
 
-
     return (
 
-        <div>
+        <div className="overflow-x-auto">
 
-            {/* HEADER */}
+            <table className="w-full">
 
-            <div className="mb-6">
+                <thead>
 
-                <h2 className="text-2xl font-bold text-gray-800">
-                    Exams
-                </h2>
+                    <tr className="bg-gray-50">
 
-                <p className="text-gray-500 mt-1">
-                    {exams.length} exams
-                </p>
+                        <Th>#</Th>
+                        <Th>Exam</Th>
+                        <Th>Class</Th>
+                        <Th>Academic Year</Th>
+                        <Th>Start Date</Th>
+                        <Th>End Date</Th>
 
-            </div>
+                    </tr>
 
+                </thead>
 
-            {/* TABLE */}
+                <tbody className="divide-y">
 
-            <div className="overflow-x-auto">
+                    {exams.length === 0 ? (
 
-                <table className="w-full">
+                        <EmptyRow
+                            colSpan="6"
+                            text="No exams found."
+                        />
 
-                    <thead>
+                    ) : (
 
-                        <tr className="bg-gray-50">
+                        exams.map((exam, index) => (
 
-                            <Th>
-                                #
-                            </Th>
+                            <tr
+                                key={exam.id}
+                                className="hover:bg-gray-50"
+                            >
 
-                            <Th>
-                                Exam
-                            </Th>
+                                <Td>
+                                    {index + 1}
+                                </Td>
 
-                            <Th>
-                                Class
-                            </Th>
+                                <Td>
+                                    <span className="font-semibold text-gray-800">
+                                        {exam.name}
+                                    </span>
+                                </Td>
 
-                            <Th>
-                                Academic Year
-                            </Th>
+                                <Td>
+                                    {exam.school_class}
+                                </Td>
 
-                            <Th>
-                                Start Date
-                            </Th>
+                                <Td>
+                                    {exam.academic_year}
+                                </Td>
 
-                            <Th>
-                                End Date
-                            </Th>
+                                <Td>
+                                    {exam.start_date}
+                                </Td>
 
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody className="divide-y">
-
-                        {exams.length === 0 ? (
-
-                            <tr>
-
-                                <td
-                                    colSpan="6"
-                                    className="px-6 py-16 text-center text-gray-500"
-                                >
-                                    No exams found.
-                                </td>
+                                <Td>
+                                    {exam.end_date}
+                                </Td>
 
                             </tr>
 
-                        ) : (
+                        ))
 
-                            exams.map((exam, index) => (
+                    )}
 
-                                <tr
-                                    key={exam.id}
-                                    className="hover:bg-gray-50"
-                                >
+                </tbody>
 
-                                    <Td>
-                                        {index + 1}
-                                    </Td>
-
-                                    <Td>
-
-                                        <span className="font-semibold text-gray-800">
-                                            {exam.name}
-                                        </span>
-
-                                    </Td>
-
-                                    <Td>
-                                        {exam.school_class}
-                                    </Td>
-
-                                    <Td>
-                                        {exam.academic_year}
-                                    </Td>
-
-                                    <Td>
-                                        {exam.start_date}
-                                    </Td>
-
-                                    <Td>
-                                        {exam.end_date}
-                                    </Td>
-
-                                </tr>
-
-                            ))
-
-                        )}
-
-                    </tbody>
-
-                </table>
-
-            </div>
+            </table>
 
         </div>
 
     );
+
 }
 
 
@@ -555,141 +1373,97 @@ function ExamSubjectList ({
     if (loading) {
 
         return (
-
-            <div className="py-12 text-center text-gray-500">
-                Loading exam subjects...
-            </div>
-
+            <Loading text="Loading exam subjects..." />
         );
 
     }
 
-
     return (
 
-        <div>
+        <div className="overflow-x-auto">
 
-            <div className="mb-6">
+            <table className="w-full">
 
-                <h2 className="text-2xl font-bold text-gray-800">
-                    Exam Subjects
-                </h2>
+                <thead>
 
-                <p className="text-gray-500 mt-1">
-                    {examSubjects.length} exam subjects
-                </p>
+                    <tr className="bg-gray-50">
 
-            </div>
+                        <Th>#</Th>
+                        <Th>Exam</Th>
+                        <Th>Subject</Th>
+                        <Th>Maximum Marks</Th>
+                        <Th>Pass Marks</Th>
 
+                    </tr>
 
-            <div className="overflow-x-auto">
+                </thead>
 
-                <table className="w-full">
+                <tbody className="divide-y">
 
-                    <thead>
+                    {examSubjects.length === 0 ? (
 
-                        <tr className="bg-gray-50">
+                        <EmptyRow
+                            colSpan="5"
+                            text="No exam subjects found."
+                        />
 
-                            <Th>
-                                #
-                            </Th>
+                    ) : (
 
-                            <Th>
-                                Exam
-                            </Th>
+                        examSubjects.map(
+                            (examSubject, index) => (
 
-                            <Th>
-                                Subject
-                            </Th>
-
-                            <Th>
-                                Maximum Marks
-                            </Th>
-
-                            <Th>
-                                Pass Marks
-                            </Th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody className="divide-y">
-
-                        {examSubjects.length === 0 ? (
-
-                            <tr>
-
-                                <td
-                                    colSpan="5"
-                                    className="px-6 py-16 text-center text-gray-500"
+                                <tr
+                                    key={examSubject.id}
+                                    className="hover:bg-gray-50"
                                 >
-                                    No exam subjects found.
-                                </td>
 
-                            </tr>
+                                    <Td>
+                                        {index + 1}
+                                    </Td>
 
-                        ) : (
-
-                            examSubjects.map(
-                                (examSubject, index) => (
-
-                                    <tr
-                                        key={examSubject.id}
-                                        className="hover:bg-gray-50"
-                                    >
-
-                                        <Td>
-                                            {index + 1}
-                                        </Td>
-
-                                        <Td>
-
-                                            <span className="font-semibold text-gray-800">
-                                                {
-                                                    examSubject.exam_name ||
-                                                    examSubject.exam
-                                                }
-                                            </span>
-
-                                        </Td>
-
-                                        <Td>
+                                    <Td>
+                                        <span className="font-semibold text-gray-800">
                                             {
-                                                examSubject.subject_name ||
-                                                examSubject.subject
+                                                examSubject.exam_name ||
+                                                examSubject.exam
                                             }
-                                        </Td>
+                                        </span>
+                                    </Td>
 
-                                        <Td>
-                                            {
-                                                examSubject.maximum_marks
-                                            }
-                                        </Td>
+                                    <Td>
+                                        {
+                                            examSubject.subject_name ||
+                                            examSubject.subject
+                                        }
+                                    </Td>
 
-                                        <Td>
-                                            {
-                                                examSubject.pass_marks
-                                            }
-                                        </Td>
+                                    <Td>
+                                        {
+                                            examSubject.maximum_marks
+                                        }
+                                    </Td>
 
-                                    </tr>
+                                    <Td>
+                                        {
+                                            examSubject.pass_marks
+                                        }
+                                    </Td>
 
-                                )
+                                </tr>
+
                             )
+                        )
 
-                        )}
+                    )}
 
-                    </tbody>
+                </tbody>
 
-                </table>
-
-            </div>
+            </table>
 
         </div>
 
     );
+
 }
 
 
@@ -705,157 +1479,365 @@ function StudentResultList ({
     if (loading) {
 
         return (
-
-            <div className="py-12 text-center text-gray-500">
-                Loading student results...
-            </div>
-
+            <Loading text="Loading student results..." />
         );
 
     }
 
+    return (
+
+        <div className="overflow-x-auto">
+
+            <table className="w-full">
+
+                <thead>
+
+                    <tr className="bg-gray-50">
+
+                        <Th>#</Th>
+                        <Th>Student ID</Th>
+                        <Th>Student</Th>
+                        <Th>Exam</Th>
+                        <Th>Subject</Th>
+                        <Th>Marks Obtained</Th>
+                        <Th>Remarks</Th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody className="divide-y">
+
+                    {studentResults.length === 0 ? (
+
+                        <EmptyRow
+                            colSpan="7"
+                            text="No student results found."
+                        />
+
+                    ) : (
+
+                        studentResults.map(
+                            (result, index) => (
+
+                                <tr
+                                    key={result.id}
+                                    className="hover:bg-gray-50"
+                                >
+
+                                    <Td>
+                                        {index + 1}
+                                    </Td>
+
+                                    <Td>
+
+                                        <span className="font-semibold text-blue-600">
+                                            {
+                                                result.student_id ||
+                                                result.student
+                                            }
+                                        </span>
+
+                                    </Td>
+
+                                    <Td>
+
+                                        <span className="font-semibold text-gray-800">
+                                            {
+                                                result.student_name ||
+                                                "Student"
+                                            }
+                                        </span>
+
+                                    </Td>
+
+                                    <Td>
+                                        {
+                                            result.exam_name ||
+                                            "-"
+                                        }
+                                    </Td>
+
+                                    <Td>
+                                        {
+                                            result.subject_name ||
+                                            "-"
+                                        }
+                                    </Td>
+
+                                    <Td>
+
+                                        <span className="font-semibold">
+                                            {
+                                                result.marks_obtained
+                                            }
+                                        </span>
+
+                                    </Td>
+
+                                    <Td>
+                                        {
+                                            result.remarks ||
+                                            "-"
+                                        }
+                                    </Td>
+
+                                </tr>
+
+                            )
+                        )
+
+                    )}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    );
+
+}
+
+
+// =============================================================
+// TAB BUTTON
+// =============================================================
+
+function TabButton ({
+    active,
+    onClick,
+    children,
+}) {
+
+    return (
+
+        <button
+            type="button"
+            onClick={onClick}
+            className={`px-8 py-5 text-lg font-semibold whitespace-nowrap ${active
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+        >
+
+            {children}
+
+        </button>
+
+    );
+
+}
+
+
+// =============================================================
+// INPUT
+// =============================================================
+
+function Input ({
+    label,
+    type = "text",
+    value,
+    onChange,
+    placeholder,
+    required = false,
+    min,
+}) {
 
     return (
 
         <div>
 
-            <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+                {label}
+            </label>
 
-                <h2 className="text-2xl font-bold text-gray-800">
-                    Student Results
-                </h2>
+            <input
+                type={type}
+                value={value}
+                onChange={onChange}
+                placeholder={placeholder}
+                required={required}
+                min={min}
+                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
 
-                <p className="text-gray-500 mt-1">
-                    {studentResults.length} student results
-                </p>
+        </div>
 
-            </div>
+    );
 
-
-            <div className="overflow-x-auto">
-
-                <table className="w-full">
-
-                    <thead>
-
-                        <tr className="bg-gray-50">
-
-                            <Th>
-                                #
-                            </Th>
-
-                            <Th>
-                                Student
-                            </Th>
-
-                            <Th>
-                                Exam
-                            </Th>
-
-                            <Th>
-                                Subject
-                            </Th>
-
-                            <Th>
-                                Marks Obtained
-                            </Th>
-
-                            <Th>
-                                Remarks
-                            </Th>
-
-                        </tr>
-
-                    </thead>
+}
 
 
-                    <tbody className="divide-y">
+// =============================================================
+// SELECT
+// =============================================================
 
-                        {studentResults.length === 0 ? (
+function Select ({
+    label,
+    value,
+    onChange,
+    children,
+    required = false,
+}) {
 
-                            <tr>
+    return (
 
-                                <td
-                                    colSpan="6"
-                                    className="px-6 py-16 text-center text-gray-500"
-                                >
-                                    No student results found.
-                                </td>
+        <div>
 
-                            </tr>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+                {label}
+            </label>
 
-                        ) : (
+            <select
+                value={value}
+                onChange={onChange}
+                required={required}
+                className="w-full border border-gray-300 rounded-lg px-4 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
 
-                            studentResults.map(
-                                (result, index) => (
+                {children}
 
-                                    <tr
-                                        key={result.id}
-                                        className="hover:bg-gray-50"
-                                    >
+            </select>
 
-                                        <Td>
-                                            {index + 1}
-                                        </Td>
+        </div>
 
-                                        <Td>
+    );
 
-                                            <span className="font-semibold text-gray-800">
-                                                {
-                                                    result.student_name ||
-                                                    result.student
-                                                }
-                                            </span>
+}
 
-                                        </Td>
 
-                                        <Td>
-                                            {
-                                                result.exam_name ||
-                                                "-"
-                                            }
-                                        </Td>
+// =============================================================
+// MODAL
+// =============================================================
 
-                                        <Td>
-                                            {
-                                                result.subject_name ||
-                                                "-"
-                                            }
-                                        </Td>
+function Modal ({
+    title,
+    onClose,
+    children,
+}) {
 
-                                        <Td>
+    return (
 
-                                            <span className="font-semibold text-gray-800">
-                                                {
-                                                    result.marks_obtained
-                                                }
-                                            </span>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
 
-                                        </Td>
+            <div className="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
 
-                                        <Td>
-                                            {
-                                                result.remarks ||
-                                                "-"
-                                            }
-                                        </Td>
+                <div className="flex items-center justify-between px-6 py-4 border-b">
 
-                                    </tr>
+                    <h2 className="text-xl font-bold text-gray-800">
+                        {title}
+                    </h2>
 
-                                )
-                            )
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="text-gray-500 hover:text-gray-800 text-2xl"
+                    >
+                        ×
+                    </button>
 
-                        )}
+                </div>
 
-                    </tbody>
+                <div className="p-6">
 
-                </table>
+                    {children}
+
+                </div>
 
             </div>
 
         </div>
 
     );
+
+}
+
+
+// =============================================================
+// MODAL BUTTONS
+// =============================================================
+
+function ModalButtons ({
+    submitting,
+    onCancel,
+}) {
+
+    return (
+
+        <div className="flex justify-end gap-3 pt-4 border-t">
+
+            <button
+                type="button"
+                onClick={onCancel}
+                disabled={submitting}
+                className="px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="submit"
+                disabled={submitting}
+                className="px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+
+                {submitting
+                    ? "Saving..."
+                    : "Save"}
+
+            </button>
+
+        </div>
+
+    );
+
+}
+
+
+// =============================================================
+// LOADING
+// =============================================================
+
+function Loading ({
+    text,
+}) {
+
+    return (
+
+        <div className="py-12 text-center text-gray-500">
+            {text}
+        </div>
+
+    );
+
+}
+
+
+// =============================================================
+// EMPTY ROW
+// =============================================================
+
+function EmptyRow ({
+    colSpan,
+    text,
+}) {
+
+    return (
+
+        <tr>
+
+            <td
+                colSpan={colSpan}
+                className="px-6 py-16 text-center text-gray-500"
+            >
+                {text}
+            </td>
+
+        </tr>
+
+    );
+
 }
 
 
@@ -893,6 +1875,45 @@ function Td ({
         </td>
 
     );
+
+}
+
+
+// =============================================================
+// API ERROR
+// =============================================================
+
+function getApiError (error) {
+
+    const data = error.response?.data;
+
+    if (!data) {
+        return "Something went wrong.";
+    }
+
+    if (typeof data === "string") {
+        return data;
+    }
+
+    if (data.detail) {
+        return data.detail;
+    }
+
+    const firstKey = Object.keys(data)[0];
+
+    if (firstKey) {
+
+        const value = data[firstKey];
+
+        if (Array.isArray(value)) {
+            return value[0];
+        }
+
+        return String(value);
+
+    }
+
+    return "Something went wrong.";
 
 }
 
