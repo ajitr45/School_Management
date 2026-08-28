@@ -25,10 +25,14 @@ import AttendanceEdit from "./pages/attendance/AttendanceEdit";
 import Fees from "./pages/fees/Fees";
 import Exams from "./pages/Exams/Exams";
 import ReportCard from "./pages/Exams/ReportCard";
+import Timetable from "./pages/timetable/Timetables";
+import TimetableCreate from "./pages/timetable/TimetableCreate";
+import TimetableDetail from "./pages/timetable/TimetableDetail";
+import TimetableEdit from "./pages/timetable/TimetableEdit";
 
 
 
-function App() {
+function App () {
     return (
         <BrowserRouter>
 
@@ -36,7 +40,7 @@ function App() {
 
                 {/* Login */}
 
-                <Route path="/" element={<Login />}/>
+                <Route path="/" element={<Login />} />
 
                 {/* Admin Routes */}
 
@@ -45,21 +49,21 @@ function App() {
                     element={<ProtectedRoute allowedRole="ADMIN"> <AdminLayout /> </ProtectedRoute>}>
 
                     {/* /admin */}
-                    <Route index element={<AdminDashboard />}/>
+                    <Route index element={<AdminDashboard />} />
 
                     {/* /admin/students */}
 
-                    <Route path="students" element={<Students />}/>
+                    <Route path="students" element={<Students />} />
 
-                    <Route path="students/:id" element={<StudentDetail/>}/>
+                    <Route path="students/:id" element={<StudentDetail />} />
 
-                    <Route path="students/:id/edit" element={<StudentEdit/>}/>
+                    <Route path="students/:id/edit" element={<StudentEdit />} />
 
-                    <Route  path="admissions" element={<Admissions/>}/>
+                    <Route path="admissions" element={<Admissions />} />
 
-                    <Route path="admissions/:id" element={<AdmissionDetail/>}/>
+                    <Route path="admissions/:id" element={<AdmissionDetail />} />
 
-                    <Route path="Classes" element={<Classes />}/>
+                    <Route path="Classes" element={<Classes />} />
 
                     <Route path="sections" element={<Sections />} />
 
@@ -67,7 +71,7 @@ function App() {
 
                     <Route path="admissions/apply/" element={<AdmissionForm />} />
 
-                    <Route path="teachers" element={<Teachers/>} />
+                    <Route path="teachers" element={<Teachers />} />
 
                     <Route path="teachers/create/" element={<TeacherCreate />} />
 
@@ -92,7 +96,15 @@ function App() {
                     <Route path="exams" element={<Exams />} />
 
                     <Route path="exams/report-card/:studentId/:examId" element={<ReportCard />} />
-                    
+
+                    <Route path="timetable" element={<Timetable />} />
+
+                    <Route path="timetable/create" element={<TimetableCreate />} />
+
+                    <Route path="timetable/:id" element={<TimetableDetail />} />
+
+                    <Route path="timetable/:id/edit" element={<TimetableEdit />} />
+
 
                 </Route>
 
