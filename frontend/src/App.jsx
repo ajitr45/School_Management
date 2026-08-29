@@ -29,6 +29,13 @@ import Timetable from "./pages/timetable/Timetables";
 import TimetableCreate from "./pages/timetable/TimetableCreate";
 import TimetableDetail from "./pages/timetable/TimetableDetail";
 import TimetableEdit from "./pages/timetable/TimetableEdit";
+import Homework from "./pages/homework/Homework";
+import HomeworkCreate from "./pages/homework/HomeworkCreate";
+import HomeworkDetail from "./pages/homework/HomeworkDetail";
+import HomeworkEdit from "./pages/homework/HomeworkEdit";
+import StudyMaterial from "./pages/study-material/StudyMaterial";
+import ChapterCreate from "./pages/study-material/ChapterCreate";
+import ChapterDetail from "./pages/study-material/ChapterDetail";
 
 
 
@@ -104,6 +111,22 @@ function App () {
                     <Route path="timetable/:id" element={<TimetableDetail />} />
 
                     <Route path="timetable/:id/edit" element={<TimetableEdit />} />
+
+                    <Route path="homework" element={<Homework />} />
+
+                    <Route path="homework/create" element={<HomeworkCreate />} />
+
+                    <Route path="homework/:id" element={<HomeworkDetail />} />
+
+                    <Route path="homework/:id/edit" element={<HomeworkEdit />} />
+
+                    <Route path="study-material" element={<StudyMaterial />} />
+
+                    <Route path="study-material/chapters/create" element={<ChapterCreate />} />
+
+                    <Route path="study-material/chapters/:id" element={<ChapterDetail />}/>
+
+                    
 
 
                 </Route>
