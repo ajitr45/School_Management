@@ -36,7 +36,14 @@ import HomeworkEdit from "./pages/homework/HomeworkEdit";
 import StudyMaterial from "./pages/study-material/StudyMaterial";
 import ChapterCreate from "./pages/study-material/ChapterCreate";
 import ChapterDetail from "./pages/study-material/ChapterDetail";
-
+import ChapterEdit from "./pages/study-material/ChapterEdit";
+import StudyMaterialCreate from "./pages/study-material/StudyMaterialCreate";
+import StudyMaterialDetail from "./pages/study-material/StudyMaterialDetail";
+import StudyMaterialEdit from "./pages/study-material/StudyMaterialEdit";
+import Notices from "./pages/notices/Notices";
+import NoticeCreate from "./pages/notices/NoticeCreate";
+import NoticeDetail from "./pages/notices/NoticeDetail";
+import NoticeEdit from "./pages/notices/NoticeEdit";
 
 
 function App () {
@@ -124,9 +131,25 @@ function App () {
 
                     <Route path="study-material/chapters/create" element={<ChapterCreate />} />
 
-                    <Route path="study-material/chapters/:id" element={<ChapterDetail />}/>
+                    <Route path="study-material/chapters/:id" element={<ChapterDetail />} />
 
-                    
+                    <Route path="study-material/chapters/:id/edit" element={<ChapterEdit />} />
+
+                    <Route path="study-material/create" element={<StudyMaterialCreate />} />
+
+                    <Route path="study-material/:id" element={<StudyMaterialDetail />} />
+
+                    <Route path="study-material/:id/edit" element={<StudyMaterialEdit />} />
+
+                    <Route path="notices" element={<Notices />} />
+
+                    <Route path="notices/create" element={<NoticeCreate />}/>
+
+                    <Route path="notices/:id" element={<NoticeDetail />}/>
+
+                    <Route path="notices/:id/edit" element={<NoticeEdit />}/>
+
+
 
 
                 </Route>
