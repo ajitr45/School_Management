@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from accounts.models import User
 from .serializers import TeacherSerializer, TeacherAssignmentSerializer, TeacherListSerializer, TeacherDetailSerializer, TeacherUpdateSerializer
 from .services import assign_teacher, create_teacher, update_teacher
 from .models import Teacher, TeacherAssignment
@@ -27,6 +28,10 @@ class TeacherAssignmentAPIView(APIView):
     def get(self, request):
         
         assignments = TeacherAssignment.objects.all()
+        
+        if request.user.role == User.TEACHER:
+            assignments = assignments.filter(teacher= request.user.teacher)
+            
         serializer = TeacherAssignmentSerializer(assignments, many=True)
         
         return Response(serializer.data, status=status.HTTP_200_OK)
