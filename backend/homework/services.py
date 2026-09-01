@@ -1,40 +1,41 @@
 from datetime import date
 from rest_framework.exceptions import ValidationError
 from .models import Homework
+from teachers.models import TeacherAssignment
 
 
-def create_homework(validate_data):
-    
-    school_class = validate_data["school_class"]
-    section = validate_data["section"]
-    subject = validate_data["subject"]
-    due_date = validate_data["due_date"]
-    
+def create_homework(request, validated_data):
+
+    teacher = request.user.teacher
+
+    school_class = validated_data["school_class"]
+    section = validated_data["section"]
+    subject = validated_data["subject"]
+    due_date = validated_data["due_date"]
+
+    # Section must belong to selected class
     if section.school_class != school_class:
-        
-        raise ValidationError(
-            {
-                "section": "Selected section does not belong to the selected class."
-            }
-        )
-        
+        raise ValidationError({"section": "Selected section does not belong to the selected class."})
+
+    # Subject must belong to selected class
     if subject.school_class != school_class:
-        
-        raise ValidationError(
-            {
-                "subject": "Selected subject does not belong to selected class."
-            }
-        )
-        
+        raise ValidationError({"subject": "Selected subject does not belong to selected class."})
+
+    # Teacher must be assigned to this class, section and subject
+    is_assigned = TeacherAssignment.objects.filter(
+        teacher=teacher,
+        school_class=school_class,
+        section=section,
+        subject=subject,
+    ).exists()
+
+    if not is_assigned:
+        raise ValidationError({"detail": "You are not assigned to this class, section and subject."})
+
     if due_date < date.today():
-        
-        raise ValidationError(
-            {
-                "due_date": "Due date cannot be in past."
-            }
-        )
-        
-    return Homework.objects.create(**validate_data)
+        raise ValidationError({"due_date": "Due date cannot be in past."})
+
+    return Homework.objects.create(teacher=teacher, **validated_data)
 
 
 
