@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import PermissionDenied
 from accounts.models import User
-from accounts.permissions import IsAdminOrTeacher, IsAdminTeacherOrStudent
+from accounts.permissions import IsAdmin, IsAdminTeacherOrStudent
 from .models import Timetable
 from .serializers import TimetableSerializer
 from .services import create_timetable, update_timetable
@@ -17,7 +17,7 @@ class TimetableListCreateAPIView(APIView):
         if self.request.method == "GET":
             permission_classes = [IsAdminTeacherOrStudent]
         else:
-            permission_classes = [IsAdminOrTeacher]
+            permission_classes = [IsAdmin]
 
         return [permission() for permission in permission_classes]
 
@@ -29,6 +29,10 @@ class TimetableListCreateAPIView(APIView):
         if request.user.role == User.STUDENT:
 
             timetables = timetables.filter(school_class=request.user.student.school_class, section=request.user.student.section)
+        
+        elif request.user.role == User.TEACHER:
+            
+            timetables = timetables.filter(teacher= request.user.teacher)
 
         serializer = TimetableSerializer(timetables, many=True)
 
@@ -50,7 +54,7 @@ class TimetableDetailAPIView(APIView):
         if self.request.method == "GET":
             permission_classes = [IsAdminTeacherOrStudent]
         else:
-            permission_classes = [IsAdminOrTeacher]
+            permission_classes = [IsAdmin]
 
         return [permission() for permission in permission_classes]
 
@@ -58,11 +62,19 @@ class TimetableDetailAPIView(APIView):
 
         timetable = get_object_or_404(Timetable, pk=pk)
 
-        # Students can only view their own class and section timetable.
-        if request.user.role == User.STUDENT:
+        # Teacher can view only their own timetable.
+        if request.user.role == User.TEACHER:
 
-            if (timetable.school_class != request.user.student.school_class
-                or timetable.section != request.user.student.section):
+            if timetable.teacher != request.user.teacher:
+                raise PermissionDenied("You cannot view this timetable.")
+
+        # Student can view only their own class and section timetable.
+        elif request.user.role == User.STUDENT:
+
+            if (
+                timetable.school_class != request.user.student.school_class
+                or timetable.section != request.user.student.section
+            ):
                 raise PermissionDenied("You cannot view this timetable.")
 
         serializer = TimetableSerializer(timetable)
