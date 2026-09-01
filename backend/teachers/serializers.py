@@ -30,11 +30,25 @@ class TeacherSerializer(serializers.ModelSerializer):
 
 class TeacherAssignmentSerializer(serializers.ModelSerializer):
 
-    class Meta:
+    teacher_name = serializers.CharField(source="teacher.full_name", read_only=True)
+    class_name = serializers.CharField(source="school_class.name", read_only=True)
+    section_name = serializers.CharField(source="section.name", read_only=True)
+    subject_name = serializers.CharField(source="subject.name", read_only=True)
 
+    class Meta:
         model = TeacherAssignment
 
-        fields = "__all__"
+        fields = [
+            "id",
+            "teacher",
+            "teacher_name",
+            "school_class",
+            "class_name",
+            "section",
+            "section_name",
+            "subject",
+            "subject_name",
+        ]
         
         
 class TeacherListSerializer(serializers.ModelSerializer):
