@@ -44,6 +44,19 @@ import Notices from "./pages/notices/Notices";
 import NoticeCreate from "./pages/notices/NoticeCreate";
 import NoticeDetail from "./pages/notices/NoticeDetail";
 import NoticeEdit from "./pages/notices/NoticeEdit";
+import TeacherDashboard from "./pages/TeacherDashboard";
+import TeacherLayout from "./layouts/TeacherLayout";
+import TeacherClasses from "./pages/teacher/TeacherClasses";
+import TeacherStudents from "./pages/teacher/TeacherStudents";
+import TeacherAttendance from "./pages/teacher/TeacherAttendance";
+import TeacherStudentDetail from "./pages/teacher/TeacherStudentDetail";
+import TeacherHomework from "./pages/teacher/TeacherHomework";
+import TeacherHomeworkCreate from "./pages/teacher/TeacherHomeworkCreate";
+import TeacherHomeworkDetail from "./pages/teacher/TeacherHomeworkDetail";
+import TeacherHomeworkEdit from "./pages/teacher/TeacherHomeworkEdit";
+import TeacherStudyMaterial from "./pages/teacher/TeacherStudyMaterial";
+import TeacherTimetable from "./pages/teacher/TeacherTimetable";
+import TeacherExams from "./pages/teacher/TeacherExams";
 
 
 function App () {
@@ -77,7 +90,7 @@ function App () {
 
                     <Route path="admissions/:id" element={<AdmissionDetail />} />
 
-                    <Route path="Classes" element={<Classes />} />
+                    <Route path="classes" element={<Classes />} />
 
                     <Route path="sections" element={<Sections />} />
 
@@ -143,14 +156,41 @@ function App () {
 
                     <Route path="notices" element={<Notices />} />
 
-                    <Route path="notices/create" element={<NoticeCreate />}/>
+                    <Route path="notices/create" element={<NoticeCreate />} />
 
-                    <Route path="notices/:id" element={<NoticeDetail />}/>
+                    <Route path="notices/:id" element={<NoticeDetail />} />
 
-                    <Route path="notices/:id/edit" element={<NoticeEdit />}/>
+                    <Route path="notices/:id/edit" element={<NoticeEdit />} />
 
+                </Route>
 
+                {/*  Teacher route */}
 
+                <Route path="/teacher" element={<ProtectedRoute allowedRole="TEACHER"> <TeacherLayout /></ProtectedRoute>}>
+
+                    <Route index element={<TeacherDashboard />} />
+
+                    <Route path="classes" element={<TeacherClasses />} />
+
+                    <Route path="students" element={<TeacherStudents />} />
+
+                    <Route path="attendance" element={<TeacherAttendance />} />
+
+                    <Route path="students/:id" element={<TeacherStudentDetail />} />
+
+                    <Route path="homework" element={<TeacherHomework />} />
+
+                    <Route path="homework/create" element={<TeacherHomeworkCreate />} />
+
+                    <Route path="homework/:id" element={<TeacherHomeworkDetail />} />
+
+                    <Route path="homework/:id/edit" element={<TeacherHomeworkEdit />} />
+
+                    <Route path="/teacher/study-material" element={<TeacherStudyMaterial />} />
+
+                    <Route path="/teacher/timetable" element={<TeacherTimetable />} />
+
+                    <Route path="/teacher/exams" element={<TeacherExams />}/>
 
                 </Route>
 
