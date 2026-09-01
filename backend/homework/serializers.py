@@ -16,6 +16,7 @@ class HomeworkSerializer(serializers.ModelSerializer):
         fields ="__all__"
         
         read_only_fields = (
+            "teacher",
             "created_at",
             "updated_at",
         )
