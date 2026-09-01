@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import status
+from rest_framework import request, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import PermissionDenied
@@ -9,6 +9,8 @@ from .models import Exam, ExamSubject, StudentResult
 from .serializers import  ExamSerializer, ExamSubjectSerializer, StudentResultSerializer
 from .services import created_exam,updated_exam,created_exam_subject,updated_exam_subject,created_student_result,updated_student_result,generate_report_card
 from .report_serializers import ReportCardSerializer
+from teachers.models import TeacherAssignment
+from students.models import Student
 
 
 class ExamListCreateApiView(APIView):
@@ -26,12 +28,19 @@ class ExamListCreateApiView(APIView):
     def get(self, request):
 
         exams = Exam.objects.all()
-
-        # Student can see only exams of his/her class.
+        # Student can see only exams of their class.
         if request.user.role == User.STUDENT:
+
             exams = exams.filter(school_class=request.user.student.school_class)
+
+        # Teacher can see exams for their assigned classes.
+        elif request.user.role == User.TEACHER:
+
+            assignments = TeacherAssignment.objects.filter(teacher=request.user.teacher)
+            exams = exams.filter(school_class__in=assignments.values("school_class"))
+
         serializer = ExamSerializer(exams, many=True)
-        
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
@@ -59,8 +68,17 @@ class ExamDetailApiView(APIView):
 
         exam = get_object_or_404(Exam, pk=pk)
 
-        # Student can view only exams of his/her class.
-        if request.user.role == User.STUDENT:
+        # Teacher can view exams of their assigned classes.
+        if request.user.role == User.TEACHER:
+
+            is_assigned = TeacherAssignment.objects.filter(teacher=request.user.teacher,
+            school_class=exam.school_class).exists()
+
+            if not is_assigned:
+                raise PermissionDenied("You cannot view this exam.")
+
+        # Student can view only exams of their class.
+        elif request.user.role == User.STUDENT:
 
             if exam.school_class != request.user.student.school_class:
                 raise PermissionDenied("You cannot view this exam.")
@@ -68,6 +86,7 @@ class ExamDetailApiView(APIView):
         serializer = ExamSerializer(exam)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
     def put(self, request, pk):
 
@@ -144,18 +163,23 @@ class ExamSubjectDetailAPIView(APIView):
 
         return [permission() for permission in permission_classes]
 
-    def get(self, request, pk):
+    def get(self, request):
 
-        exam_subject = get_object_or_404(ExamSubject, pk=pk)
+        exam_subjects = ExamSubject.objects.all()
 
-        # Student can view only exam subjects
-        # belonging to his/her class.
+    # Student can see subjects of exams belonging to their class.
         if request.user.role == User.STUDENT:
 
-            if (exam_subject.exam.school_class != request.user.student.school_class):
-                raise PermissionDenied("You cannot view this exam subject.")
+         exam_subjects = exam_subjects.filter(exam__school_class=request.user.student.school_class)
 
-        serializer = ExamSubjectSerializer(exam_subject)
+    # Teacher can see only subjects assigned to them.
+        elif request.user.role == User.TEACHER:
+            
+            assignments = TeacherAssignment.objects.filter(teacher=request.user.teacher)
+            exam_subjects = exam_subjects.filter(exam__school_class__in=assignments.values("school_class"),
+            subject__in=assignments.values("subject") )
+
+        serializer = ExamSubjectSerializer(exam_subjects, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -277,6 +301,55 @@ class StudentResultDetailAPIView(APIView):
 
 
 class ReportCardAPIView(APIView):
+
+    permission_classes = [IsAdminTeacherOrStudent]
+
+    def get(self, request, student_id, exam_id):
+
+        student = get_object_or_404(Student, id=student_id)
+        exam = get_object_or_404(Exam, id=exam_id)
+
+        # Teacher can view report cards
+        # only for their assigned class.
+        if request.user.role == User.TEACHER:
+
+            from teachers.models import TeacherAssignment
+
+            is_assigned = TeacherAssignment.objects.filter(
+                teacher=request.user.teacher,
+                school_class=student.school_class,
+            ).exists()
+
+            if not is_assigned:
+                raise PermissionDenied(
+                    "You cannot view this student's report card."
+                )
+
+        # Student can view only their own report card.
+        elif request.user.role == User.STUDENT:
+
+            if student != request.user.student:
+                raise PermissionDenied(
+                    "You cannot view another student's report card."
+                )
+
+        # Student and exam must belong to the same class.
+        if student.school_class != exam.school_class:
+            raise PermissionDenied(
+                "This exam does not belong to the student's class."
+            )
+
+        report = generate_report_card(
+            student_id,
+            exam_id
+        )
+
+        serializer = ReportCardSerializer(report)
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )
 
     permission_classes = [IsAdminTeacherOrStudent]
 
