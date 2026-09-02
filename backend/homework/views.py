@@ -49,11 +49,7 @@ class HomeworkListCreateAPIView(APIView):
         serializer = HomeworkSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
-        data = serializer.validated_data
-        
-        if request.user.role == User.TEACHER:
-            data["teacher"] = request.user.teacher
-        homework = create_homework(data)
+        homework = create_homework(request, serializer.validated_data)
 
         return Response(HomeworkSerializer(homework).data, status=status.HTTP_201_CREATED)
 
