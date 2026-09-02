@@ -15,7 +15,7 @@ class StudentViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Up
 
     def get_permissions(self):
 
-        if self.action in ["list", "retrieve"]:
+        if self.action in ["list", "retrieve"]: 
             permission_classes = [IsAdminTeacherOrStudent]
 
         elif self.action in ["update", "partial_update"]:
@@ -29,38 +29,38 @@ class StudentViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Up
             for permission in permission_classes
         ]
 
-def get_queryset(self):
+    def get_queryset(self):
 
-    
-    if self.request.user.role == User.STUDENT:
+        
+        if self.request.user.role == User.STUDENT:
 
-        return Student.objects.filter(
-            user=self.request.user
-        )
+            return Student.objects.filter(
+                user=self.request.user
+            )
 
-    # TEACHER
-    if self.request.user.role == User.TEACHER:
+        # TEACHER
+        if self.request.user.role == User.TEACHER:
 
-        assignments = TeacherAssignment.objects.filter(teacher=self.request.user.teacher)
-        students = Student.objects.none()
+            assignments = TeacherAssignment.objects.filter(teacher=self.request.user.teacher)
+            students = Student.objects.none()
 
-        for assignment in assignments:
-            students |= Student.objects.filter( school_class=assignment.school_class, section=assignment.section)
+            for assignment in assignments:
+                students |= Student.objects.filter( school_class=assignment.school_class, section=assignment.section)
 
-        return students.distinct()
+            return students.distinct()
 
-    return Student.objects.all()
+        return Student.objects.all()
 
-def retrieve(self, request, *args, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
 
-    student = self.get_object()
-    serializer = self.get_serializer(student)
+        student = self.get_object()
+        serializer = self.get_serializer(student)
 
-    return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-def list(self, request, *args, **kwargs):
+    def list(self, request, *args, **kwargs):
 
-    students = self.get_queryset()
-    serializer = self.get_serializer(students, many=True)
+        students = self.get_queryset()
+        serializer = self.get_serializer(students, many=True)
 
-    return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
