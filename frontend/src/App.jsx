@@ -57,6 +57,11 @@ import TeacherHomeworkEdit from "./pages/teacher/TeacherHomeworkEdit";
 import TeacherStudyMaterial from "./pages/teacher/TeacherStudyMaterial";
 import TeacherTimetable from "./pages/teacher/TeacherTimetable";
 import TeacherExams from "./pages/teacher/TeacherExams";
+import TeacherNotices from "./pages/teacher/TeacherNotices";
+import StudentProfile from "./pages/student/StudentProfile";
+import StudentAttendance from "./pages/student/StudentAttendance";
+import StudentHomework from "./pages/student/StudentHomework";
+import StudentHomeworkDetail from "./pages/student/StudentHomeworkDetail";
 
 
 function App () {
@@ -186,11 +191,29 @@ function App () {
 
                     <Route path="homework/:id/edit" element={<TeacherHomeworkEdit />} />
 
-                    <Route path="/teacher/study-material" element={<TeacherStudyMaterial />} />
+                    <Route path="study-material" element={<TeacherStudyMaterial />} />
 
-                    <Route path="/teacher/timetable" element={<TeacherTimetable />} />
+                    <Route path="timetable" element={<TeacherTimetable />} />
 
-                    <Route path="/teacher/exams" element={<TeacherExams />}/>
+                    <Route path="exams" element={<TeacherExams />} />
+
+                    <Route path="notices" element={<TeacherNotices />} />
+
+                </Route>
+
+
+                <Route path="/student" element={<ProtectedRoute allowedRole="STUDENT"><StudentLayout /></ProtectedRoute>}>
+
+                    <Route index element={<StudentDashboard />} />
+
+                    <Route path="profile" element={<StudentProfile />} />
+
+                    <Route path="attendance" element={<StudentAttendance />} />
+
+                    <Route path="homework" element={<StudentHomework />} />
+
+                    <Route path="homework/:id" element={<StudentHomeworkDetail />} />
+
 
                 </Route>
 
