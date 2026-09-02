@@ -6,14 +6,10 @@ function ProtectedRoute({ children, allowedRole }) {
     const user = JSON.parse(localStorage.getItem("user"));
 
     // Login nahi hai
-    if (!accessToken) {
-        return <Navigate to="/" replace />;
-    }
+    if (!accessToken) {return <Navigate to="/" replace />}
 
     // Role allowed nahi hai
-    if (user?.role !== allowedRole) {
-        return <Navigate to="/" replace />;
-    }
+    if (user?.role !== allowedRole) {return <Navigate to="/" replace />}
 
     return children;
 }
