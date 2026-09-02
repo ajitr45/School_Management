@@ -4,24 +4,24 @@ from .models import Exam, ExamSubject, StudentResult
 from students.models import Student
 
 
-def created_exam(validated_data):
-    
+def create_exam(validated_data):
+
     start_date = validated_data["start_date"]
     end_date = validated_data["end_date"]
-    
+
     if end_date < start_date:
         raise ValidationError({"end_date": "End date cannot be before start date."})
 
     return Exam.objects.create(**validated_data)
 
 
-def updated_exam(exam, validated_data):
-    
+def update_exam(exam, validated_data):
+
     start_date = validated_data.get("start_date", exam.start_date)
     end_date = validated_data.get("end_date", exam.end_date)
-    
+
     if end_date < start_date:
-        raise ValidationError({"end_date": "End date cannot be before start date. "})
+        raise ValidationError({"end_date": "End date cannot be before start date."})
 
     for attr, value in validated_data.items():
         setattr(exam, attr, value)
@@ -30,98 +30,70 @@ def updated_exam(exam, validated_data):
     return exam
 
 
+def create_exam_subject(validated_data):
 
-def created_exam_subject(validated_data):
-    
     exam = validated_data["exam"]
     subject = validated_data["subject"]
     maximum_marks = validated_data["maximum_marks"]
     pass_marks = validated_data["pass_marks"]
-    
-    # Subject must belong to the same class as the exam.  
-    if subject.school_class !=  exam.school_class:
-        raise ValidationError({
-            "subject" : "Selected subject does not belong to the exam's class."
-        })
-    
-    # Pass marks cannot exceed maximum marks.
-    if validated_data["pass_marks"] > validated_data["maximum_marks"]:
-        raise ValidationError(
-            {
-                "pass_marks": "Pass marks cannot be greater than maximum marks."
-            }
-        )
+
+    if subject.school_class != exam.school_class:
+        raise ValidationError({"subject": "Selected subject does not belong to the exam's class."})
+
+    if pass_marks > maximum_marks:
+        raise ValidationError({"pass_marks": "Pass marks cannot be greater than maximum marks."})
 
     return ExamSubject.objects.create(**validated_data)
 
 
-def updated_exam_subject(exam_subject, validated_data):
+def update_exam_subject(exam_subject, validated_data):
 
     exam = validated_data.get("exam", exam_subject.exam)
     subject = validated_data.get("subject", exam_subject.subject)
     maximum_marks = validated_data.get("maximum_marks", exam_subject.maximum_marks)
     pass_marks = validated_data.get("pass_marks", exam_subject.pass_marks)
 
-    # Subject must belong to the same class as the exam.
     if subject.school_class != exam.school_class:
-        raise ValidationError({"subject": "Selected subject does not belong to the exam's class. "})
+        raise ValidationError({"subject": "Selected subject does not belong to the exam's class."})
 
-    # Pass marks cannot be greater than maximum marks.
     if pass_marks > maximum_marks:
         raise ValidationError({"pass_marks": "Pass marks cannot be greater than maximum marks."})
 
-    # Update the existing ExamSubject.
     for attr, value in validated_data.items():
         setattr(exam_subject, attr, value)
 
     exam_subject.save()
-
     return exam_subject
 
 
-def created_student_result(validated_data):
+def create_student_result(validated_data):
+
     student = validated_data["student"]
     exam_subject = validated_data["exam_subject"]
     marks_obtained = validated_data["marks_obtained"]
     exam = exam_subject.exam
-    
-    # Student and exams must belong to the same class .  
-    if student.school_class !=  exam.school_class:
-        raise ValidationError({
-            "student" : "Student does not belong to the exam's class."
-            })
-    
-    
-    # Marks cannot exceeds maximum marks.
+
+    if student.school_class != exam.school_class:
+        raise ValidationError({"student": "Student does not belong to the exam's class."})
+
     if marks_obtained > exam_subject.maximum_marks:
-        raise ValidationError(
-            {
-                "marks_obtained": "Marks obtained cannot exceed maximum marks."
-            }
-        )
+        raise ValidationError({"marks_obtained": "Marks obtained cannot exceed maximum marks."})
 
     return StudentResult.objects.create(**validated_data)
 
 
-def updated_student_result(student_result, validated_data):
-    
+def update_student_result(student_result, validated_data):
+
     student = validated_data.get("student", student_result.student)
     exam_subject = validated_data.get("exam_subject", student_result.exam_subject)
-    marks_obtained = validated_data.get( "marks_obtained", student_result.marks_obtained)
-    exam = exam_subject.exam 
-    
-    # # Student and exam must belong to the same class.
-    if student.school_class != exam.school_class:
-        raise ValidationError({
-            "student" : "Student dose not belong to the exam's class."
-        })    
+    marks_obtained = validated_data.get("marks_obtained", student_result.marks_obtained)
+    exam = exam_subject.exam
 
-    if marks_obtained > student_result.exam_subject.maximum_marks:
-        raise ValidationError(
-            {
-                "marks_obtained": "Marks obtained cannot exceed maximum marks."
-            }
-        )
+    if student.school_class != exam.school_class:
+        raise ValidationError({"student": "Student does not belong to the exam's class."})
+
+    if marks_obtained > exam_subject.maximum_marks:
+        raise ValidationError({"marks_obtained": "Marks obtained cannot exceed maximum marks."})
 
     for attr, value in validated_data.items():
         setattr(student_result, attr, value)
@@ -131,6 +103,7 @@ def updated_student_result(student_result, validated_data):
 
 
 def calculate_percentage(obtained_marks, total_marks):
+
     if total_marks == 0:
         return 0
 
@@ -138,6 +111,7 @@ def calculate_percentage(obtained_marks, total_marks):
 
 
 def calculate_grade(percentage):
+
     if percentage >= 90:
         return "A+"
 
@@ -157,6 +131,7 @@ def calculate_grade(percentage):
 
 
 def calculate_status(marks_obtained, pass_marks):
+
     if marks_obtained >= pass_marks:
         return "PASS"
 
@@ -164,6 +139,7 @@ def calculate_status(marks_obtained, pass_marks):
 
 
 def calculate_division(percentage):
+
     if percentage >= 60:
         return "First Division"
 
@@ -176,24 +152,27 @@ def calculate_division(percentage):
     return "Fail"
 
 
-
 def generate_report_card(student_id, exam_id):
 
-    student = get_object_or_404( Student, id=student_id,)
-    exam = get_object_or_404( Exam, id=exam_id )
-    
-    if student.school_class != exam.school_class:
-        raise ValidationError({"exam": "This exam does not belong to the student's class. "})
+    student = get_object_or_404(Student,id=student_id)
+    exam = get_object_or_404(Exam, id=exam_id)
 
-    results = (StudentResult.objects.filter(student=student, exam_subject__exam=exam,).select_related("exam_subject","exam_subject__subject"))
+    if student.school_class != exam.school_class:
+        raise ValidationError({"exam": "This exam does not belong to the student's class."})
+
+    results = (StudentResult.objects.filter(student=student, exam_subject__exam=exam) .select_related(
+            "exam_subject",
+            "exam_subject__subject"))
+
     subject_count = ExamSubject.objects.filter(exam=exam).count()
-    
-        
+
+    if subject_count == 0:
+        raise ValidationError({"detail": "No subjects are configured for this exam."})
+
     if results.count() != subject_count:
         raise ValidationError({
-            "detail" : "Report card cannot be generated because all subject results are not available."
+            "detail": ("Report card cannot be generated because all subject results are not available.")
         })
-
 
     total_marks = 0
     obtained_marks = 0
@@ -204,9 +183,18 @@ def generate_report_card(student_id, exam_id):
     for result in results:
 
         exam_subject = result.exam_subject
-        percentage = calculate_percentage(result.marks_obtained,exam_subject.maximum_marks,)
-        grade = calculate_grade(percentage,)
-        status = calculate_status(result.marks_obtained,exam_subject.pass_marks)
+
+        percentage = calculate_percentage(
+            result.marks_obtained,
+            exam_subject.maximum_marks
+        )
+
+        grade = calculate_grade(percentage)
+
+        status = calculate_status(
+            result.marks_obtained,
+            exam_subject.pass_marks
+        )
 
         if status == "FAIL":
             overall_result = "FAIL"
@@ -225,7 +213,10 @@ def generate_report_card(student_id, exam_id):
             "remarks": result.remarks,
         })
 
-    overall_percentage = calculate_percentage(obtained_marks,total_marks,)
+    overall_percentage = calculate_percentage(
+        obtained_marks,
+        total_marks
+    )
 
     return {
         "student": {
