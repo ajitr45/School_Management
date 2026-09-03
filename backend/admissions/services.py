@@ -4,6 +4,7 @@ from accounts.models import User
 from students.models import Student
 from students.utils import generate_student_id,generate_roll_number,generate_password
 from rest_framework.exceptions import ValidationError
+from .utils import send_student_credentials
 
 from .models import Admission
 
@@ -52,6 +53,13 @@ def approve_admission(admission_id, section):
     # Update Admission Status
     admission.status = "APPROVED"
     admission.save()
+    
+    send_student_credentials(
+    admission.student_email,
+    student_id,
+    password,
+    admission.student_name
+)
 
     return {
         "message": "Admission approved successfully.",
