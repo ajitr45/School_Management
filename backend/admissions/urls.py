@@ -7,6 +7,6 @@ router.register(r'', AdmissionViewSet, basename='admission')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('admissions/<int:pk>/approve/', ApproveAdmissionAPIView.as_view(), name='approve-admission'),
-    path('admissions/<int:pk>/reject/', RejectAdmissionAPIView.as_view(), name='reject-admission'),
+    path('<int:pk>/approve/', ApproveAdmissionAPIView.as_view(), name='approve-admission'),
+    path('<int:pk>/reject/', RejectAdmissionAPIView.as_view(), name='reject-admission'),
 ]
