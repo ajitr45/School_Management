@@ -38,8 +38,8 @@ function TeacherStudyMaterial () {
                     materialsResponse
                 ] = await Promise.all([
                     api.get("teachers/assign/"),
-                    api.get("study-material/chapters/"),
-                    api.get("study-material/")
+                    api.get("study-materials/chapters/"),
+                    api.get("study-materials/")
                 ]);
 
                 setAssignments(
@@ -197,7 +197,7 @@ function TeacherStudyMaterial () {
             if (editingId) {
 
                 await api.patch(
-                    `study-material/${editingId}/`,
+                    `study-materials/${editingId}/`,
                     formData
                 );
 
@@ -208,7 +208,7 @@ function TeacherStudyMaterial () {
             } else {
 
                 await api.post(
-                    "study-material/",
+                    "study-materials/",
                     formData
                 );
 
@@ -219,7 +219,7 @@ function TeacherStudyMaterial () {
 
 
             const response = await api.get(
-                "study-material/"
+                "study-materials/"
             );
 
             setMaterials(
@@ -285,7 +285,7 @@ function TeacherStudyMaterial () {
             setMessage("");
 
             await api.delete(
-                `study-material/${materialId}/`
+                `study-materials/${materialId}/`
             );
 
             setMaterials((previous) =>
