@@ -1,83 +1,86 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
-function AdmissionSuccess() {
+function AdmissionSuccess () {
 
     const location = useLocation();
-    const navigate = useNavigate();
 
     const application = location.state?.application;
 
-
-    if (!application) {
-
-        return (
-            <div className="p-6 text-center">
-
-                <p className="text-gray-500">
-                    Application information not found.
-                </p>
-
-                <button
-                    onClick={() => navigate("/admission/apply")}
-                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg"
-                >
-                    Apply Again
-                </button>
-
-            </div>
-        );
-
-    }
-
-
     return (
+        <div className="min-h-[70vh] bg-gray-50 flex items-center justify-center px-6 py-12">
 
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
+            <div className="bg-white max-w-2xl w-full rounded-2xl shadow-sm border p-8 md:p-12 text-center">
 
-            <div className="bg-white rounded-xl shadow p-8 max-w-lg w-full text-center">
-
-                <div className="text-green-600 text-5xl mb-4">
-                    ✓
+                <div className="w-20 h-20 mx-auto rounded-full bg-green-100 flex items-center justify-center">
+                    <span className="text-4xl text-green-600">
+                        ✓
+                    </span>
                 </div>
 
-                <h1 className="text-2xl font-bold text-gray-800">
-                    Admission Application Submitted
+                <h1 className="text-3xl font-bold text-blue-950 mt-6">
+                    Application Submitted Successfully
                 </h1>
 
-                <p className="text-gray-500 mt-2">
-                    Your admission application has been submitted successfully.
+                <p className="text-gray-600 mt-4 leading-7">
+                    Thank you for applying for admission.
+                    Your application has been successfully submitted.
+                    Our school administration will review your application
+                    and contact you soon.
                 </p>
 
+                {application && (
+                    <div className="mt-8 bg-blue-50 rounded-xl p-5 text-left">
 
-                <div className="bg-gray-50 rounded-lg p-5 mt-6">
+                        <h2 className="font-bold text-blue-950 mb-4">
+                            Application Details
+                        </h2>
 
-                    <p className="text-sm text-gray-500">
-                        Application Number
-                    </p>
+                        <div className="space-y-2 text-sm">
 
-                    <p className="text-xl font-bold text-blue-600 mt-1">
-                        {application.application_no}
-                    </p>
+                            {application.id && (
+                                <p>
+                                    <span className="font-semibold">
+                                        Application ID:
+                                    </span>{" "}
+                                    {application.id}
+                                </p>
+                            )}
+
+                            {application.student_name && (
+                                <p>
+                                    <span className="font-semibold">
+                                        Student Name:
+                                    </span>{" "}
+                                    {application.student_name}
+                                </p>
+                            )}
+
+                            {application.academic_year && (
+                                <p>
+                                    <span className="font-semibold">
+                                        Academic Year:
+                                    </span>{" "}
+                                    {application.academic_year}
+                                </p>
+                            )}
+
+                        </div>
+
+                    </div>
+                )}
+
+                <div className="flex flex-col sm:flex-row justify-center gap-4 mt-8">
+
+                    <Link to="/" className="px-6 py-3 bg-blue-700 text-white rounded-lg font-semibold hover:bg-blue-800 transition">
+                        Back to Home
+                    </Link>
+
 
                 </div>
-
-
-                <p className="text-sm text-gray-500 mt-5">
-                    Please save your Application Number for future reference.
-                </p>
-
-
-                <button
-                    onClick={() => navigate("/")}
-                    className="mt-6 px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                    Go Home
-                </button>
 
             </div>
 
         </div>
-
     );
 }
 
