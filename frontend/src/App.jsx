@@ -58,10 +58,21 @@ import TeacherStudyMaterial from "./pages/teacher/TeacherStudyMaterial";
 import TeacherTimetable from "./pages/teacher/TeacherTimetable";
 import TeacherExams from "./pages/teacher/TeacherExams";
 import TeacherNotices from "./pages/teacher/TeacherNotices";
+import StudentLayout from "./layouts/StudentLayout";
+import StudentDashboard from "./pages/student/StudentDashboard";
 import StudentProfile from "./pages/student/StudentProfile";
 import StudentAttendance from "./pages/student/StudentAttendance";
 import StudentHomework from "./pages/student/StudentHomework";
 import StudentHomeworkDetail from "./pages/student/StudentHomeworkDetail";
+import StudentStudyMaterial from "./pages/student/StudentStudyMaterial";
+import StudentStudyMaterialDetail from "./pages/student/StudentStudyMaterialDetail";
+import StudentTimetable from "./pages/student/StudentTimetable";
+import StudentExams from "./pages/student/StudentExams";
+import StudentNotices from "./pages/student/StudentNotices";
+import StudentNoticeDetail from "./pages/student/StudentNoticeDetail";
+import PublicLayout from "./layouts/PublicLayout";
+import Home from "./pages/Home";
+import AdmissionSuccess from "./pages/AdmissionSuccess";
 
 
 function App () {
@@ -70,9 +81,27 @@ function App () {
 
             <Routes>
 
+                {/* Public Routes */}
+
+                <Route path="/" element={<PublicLayout />}>
+
+                    <Route index element={<Home />} />
+
+                    <Route path="admission" element={<AdmissionForm />} />
+
+                    <Route path="admission/success" element={<AdmissionSuccess />} />
+
+                <Route path="about" element={<div>About Us</div>} />
+
+                <Route path="contact" element={<div>Contact Us</div>} />        
+
+                </Route>
+
+
+
                 {/* Login */}
 
-                <Route path="/" element={<Login />} />
+                <Route path="/login" element={<Login />} />
 
                 {/* Admin Routes */}
 
@@ -145,19 +174,19 @@ function App () {
 
                     <Route path="homework/:id/edit" element={<HomeworkEdit />} />
 
-                    <Route path="study-material" element={<StudyMaterial />} />
+                    <Route path="study-materials" element={<StudyMaterial />} />
 
-                    <Route path="study-material/chapters/create" element={<ChapterCreate />} />
+                    <Route path="study-materials/chapters/create" element={<ChapterCreate />} />
 
-                    <Route path="study-material/chapters/:id" element={<ChapterDetail />} />
+                    <Route path="study-materials/chapters/:id" element={<ChapterDetail />} />
 
-                    <Route path="study-material/chapters/:id/edit" element={<ChapterEdit />} />
+                    <Route path="study-materials/chapters/:id/edit" element={<ChapterEdit />} />
 
-                    <Route path="study-material/create" element={<StudyMaterialCreate />} />
+                    <Route path="study-materials/create" element={<StudyMaterialCreate />} />
 
-                    <Route path="study-material/:id" element={<StudyMaterialDetail />} />
+                    <Route path="study-materials/:id" element={<StudyMaterialDetail />} />
 
-                    <Route path="study-material/:id/edit" element={<StudyMaterialEdit />} />
+                    <Route path="study-materials/:id/edit" element={<StudyMaterialEdit />} />
 
                     <Route path="notices" element={<Notices />} />
 
@@ -191,7 +220,7 @@ function App () {
 
                     <Route path="homework/:id/edit" element={<TeacherHomeworkEdit />} />
 
-                    <Route path="study-material" element={<TeacherStudyMaterial />} />
+                    <Route path="study-materials" element={<TeacherStudyMaterial />} />
 
                     <Route path="timetable" element={<TeacherTimetable />} />
 
@@ -202,7 +231,9 @@ function App () {
                 </Route>
 
 
-                <Route path="/student" element={<ProtectedRoute allowedRole="STUDENT"><StudentLayout /></ProtectedRoute>}>
+                {/*  Student route */}
+
+                <Route path="/student" element={<ProtectedRoute allowedRole="STUDENT"> < StudentLayout /> </ProtectedRoute>}>
 
                     <Route index element={<StudentDashboard />} />
 
@@ -213,6 +244,20 @@ function App () {
                     <Route path="homework" element={<StudentHomework />} />
 
                     <Route path="homework/:id" element={<StudentHomeworkDetail />} />
+
+                    <Route path="study-materials" element={<StudentStudyMaterial />} />
+
+                    <Route path="study-materials/:id" element={<StudentStudyMaterialDetail />} />
+
+                    <Route path="timetable" element={<StudentTimetable />} />
+
+                    <Route path="exams" element={<StudentExams />} />
+
+                    <Route path="notices" element={<StudentNotices />} />
+
+                    <Route path="notices/:id" element={<StudentNoticeDetail />} />
+
+
 
 
                 </Route>
