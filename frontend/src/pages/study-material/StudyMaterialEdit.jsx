@@ -34,8 +34,8 @@ function StudyMaterialEdit () {
 
                 const [materialResponse, chaptersResponse] =
                     await Promise.all([
-                        api.get(`study-material/${id}/`),
-                        api.get("study-material/chapters/"),
+                        api.get(`study-materials/${id}/`),
+                        api.get("study-materials/chapters/"),
                     ]);
 
                 const material = materialResponse.data;
@@ -55,6 +55,7 @@ function StudyMaterialEdit () {
                     : chaptersResponse.data.results || [];
 
                 setChapters(chapterData);
+
             } catch (error) {
                 console.log(
                     "STUDY MATERIAL EDIT ERROR:",
@@ -65,6 +66,7 @@ function StudyMaterialEdit () {
                     error.response?.data?.detail ||
                     "Failed to load study material."
                 );
+
             } finally {
                 setLoading(false);
             }
@@ -142,13 +144,14 @@ function StudyMaterialEdit () {
             }
 
             await api.patch(
-                `study-material/${id}/`,
+                `study-materials/${id}/`,
                 data
             );
 
             navigate(
-                `/admin/study-material/${id}`
+                `/admin/study-materials/${id}`
             );
+
         } catch (error) {
             console.log(
                 "UPDATE STUDY MATERIAL ERROR:",
@@ -168,6 +171,7 @@ function StudyMaterialEdit () {
                     "Failed to update study material."
                 );
             }
+
         } finally {
             setSaving(false);
         }
@@ -350,7 +354,7 @@ function StudyMaterialEdit () {
                         type="button"
                         onClick={() =>
                             navigate(
-                                `/admin/study-material/${id}`
+                                `/admin/study-materials/${id}`
                             )
                         }
                         className="px-5 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200"

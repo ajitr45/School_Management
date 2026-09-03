@@ -10,6 +10,10 @@ function StudyMaterialDetail () {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
+    // =====================================================
+    // LOAD STUDY MATERIAL
+    // =====================================================
+
     useEffect(() => {
         const loadMaterial = async () => {
             try {
@@ -17,10 +21,11 @@ function StudyMaterialDetail () {
                 setError("");
 
                 const response = await api.get(
-                    `study-material/${id}/`
+                    `study-materials/${id}/`
                 );
 
                 setMaterial(response.data);
+
             } catch (error) {
                 console.log(
                     "STUDY MATERIAL DETAIL ERROR:",
@@ -31,6 +36,7 @@ function StudyMaterialDetail () {
                     error.response?.data?.detail ||
                     "Failed to load study material."
                 );
+
             } finally {
                 setLoading(false);
             }
@@ -39,6 +45,10 @@ function StudyMaterialDetail () {
         loadMaterial();
     }, [id]);
 
+    // =====================================================
+    // LOADING
+    // =====================================================
+
     if (loading) {
         return (
             <div className="py-12 text-center text-gray-500">
@@ -46,6 +56,10 @@ function StudyMaterialDetail () {
             </div>
         );
     }
+
+    // =====================================================
+    // NOT FOUND
+    // =====================================================
 
     if (!material) {
         return (
@@ -58,7 +72,7 @@ function StudyMaterialDetail () {
                 <button
                     type="button"
                     onClick={() =>
-                        navigate("/admin/study-material")
+                        navigate("/admin/study-materials")
                     }
                     className="mt-4 px-5 py-3 bg-gray-100 rounded-lg font-semibold"
                 >
@@ -69,6 +83,10 @@ function StudyMaterialDetail () {
         );
     }
 
+    // =====================================================
+    // DETAILS
+    // =====================================================
+
     return (
         <div className="max-w-3xl mx-auto space-y-6">
 
@@ -77,6 +95,7 @@ function StudyMaterialDetail () {
             <div className="flex items-center justify-between">
 
                 <div>
+
                     <h1 className="text-3xl font-bold text-gray-800">
                         Study Material Details
                     </h1>
@@ -84,13 +103,14 @@ function StudyMaterialDetail () {
                     <p className="text-gray-500 mt-1">
                         View uploaded study material
                     </p>
+
                 </div>
 
                 <button
                     type="button"
                     onClick={() =>
                         navigate(
-                            `/admin/study-material/${id}/edit`
+                            `/admin/study-materials/${id}/edit`
                         )
                     }
                     className="px-5 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700"
@@ -108,7 +128,7 @@ function StudyMaterialDetail () {
                 </div>
             )}
 
-            {/* DETAILS */}
+            {/* DETAILS CARD */}
 
             <div className="bg-white rounded-xl shadow overflow-hidden">
 
@@ -139,6 +159,8 @@ function StudyMaterialDetail () {
                         }
                     />
 
+                    {/* FILE */}
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-2 px-6 py-4">
 
                         <div className="font-semibold text-gray-700">
@@ -148,6 +170,7 @@ function StudyMaterialDetail () {
                         <div className="md:col-span-2">
 
                             {material.file ? (
+
                                 <a
                                     href={material.file}
                                     target="_blank"
@@ -156,10 +179,13 @@ function StudyMaterialDetail () {
                                 >
                                     View / Open File
                                 </a>
+
                             ) : (
+
                                 <span className="text-gray-500">
                                     No file available
                                 </span>
+
                             )}
 
                         </div>
@@ -186,7 +212,7 @@ function StudyMaterialDetail () {
             <button
                 type="button"
                 onClick={() =>
-                    navigate("/admin/study-material")
+                    navigate("/admin/study-materials")
                 }
                 className="px-5 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200"
             >

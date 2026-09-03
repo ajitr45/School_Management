@@ -25,7 +25,7 @@ function StudyMaterial () {
             setError("");
 
             const response = await api.get(
-                "study-material/chapters/"
+                "study-materials/chapters/"
             );
 
             setChapters(
@@ -58,7 +58,7 @@ function StudyMaterial () {
             setError("");
 
             const response = await api.get(
-                "study-material/"
+                "study-materials/"
             );
 
             setMaterials(
@@ -107,7 +107,7 @@ function StudyMaterial () {
             setError("");
 
             await api.delete(
-                `study-material/chapters/${id}/`
+                `study-materials/chapters/${id}/`
             );
 
             setChapters((previous) =>
@@ -150,7 +150,7 @@ function StudyMaterial () {
             setError("");
 
             await api.delete(
-                `study-material/${id}/`
+                `study-materials/${id}/`
             );
 
             setMaterials((previous) =>
@@ -198,11 +198,11 @@ function StudyMaterial () {
                     onClick={() => {
                         if (activeTab === "chapters") {
                             navigate(
-                                "/admin/study-material/chapters/create"
+                                "/admin/study-materials/chapters/create"
                             );
                         } else {
                             navigate(
-                                "/admin/study-material/create"
+                                "/admin/study-materials/create"
                             );
                         }
                     }}
@@ -239,8 +239,8 @@ function StudyMaterial () {
                         type="button"
                         onClick={() => setActiveTab("materials")}
                         className={`px-8 py-5 text-lg font-semibold ${activeTab === "materials"
-                            ? "text-blue-600 border-b-2 border-blue-600"
-                            : "text-gray-500 hover:text-gray-700"
+                                ? "text-blue-600 border-b-2 border-blue-600"
+                                : "text-gray-500 hover:text-gray-700"
                             }`}
                     >
                         Study Materials
@@ -250,8 +250,8 @@ function StudyMaterial () {
                         type="button"
                         onClick={() => setActiveTab("chapters")}
                         className={`px-8 py-5 text-lg font-semibold ${activeTab === "chapters"
-                            ? "text-blue-600 border-b-2 border-blue-600"
-                            : "text-gray-500 hover:text-gray-700"
+                                ? "text-blue-600 border-b-2 border-blue-600"
+                                : "text-gray-500 hover:text-gray-700"
                             }`}
                     >
                         Chapters
@@ -405,7 +405,7 @@ function ChapterList ({
                                                 type="button"
                                                 onClick={() =>
                                                     navigate(
-                                                        `/admin/study-material/chapters/${chapter.id}`
+                                                        `/admin/study-materials/chapters/${chapter.id}`
                                                     )
                                                 }
                                                 className="px-3 py-1.5 text-sm bg-gray-100 rounded-md hover:bg-gray-200"
@@ -417,7 +417,7 @@ function ChapterList ({
                                                 type="button"
                                                 onClick={() =>
                                                     navigate(
-                                                        `/admin/study-material/chapters/${chapter.id}/edit`
+                                                        `/admin/study-materials/chapters/${chapter.id}/edit`
                                                     )
                                                 }
                                                 className="px-3 py-1.5 text-sm bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200"
@@ -590,7 +590,7 @@ function MaterialList ({
                                                     type="button"
                                                     onClick={() =>
                                                         navigate(
-                                                            `/admin/study-material/${material.id}`
+                                                            `/admin/study-materials/${material.id}`
                                                         )
                                                     }
                                                     className="px-3 py-1.5 text-sm bg-gray-100 rounded-md hover:bg-gray-200"
@@ -602,7 +602,7 @@ function MaterialList ({
                                                     type="button"
                                                     onClick={() =>
                                                         navigate(
-                                                            `/admin/study-material/${material.id}/edit`
+                                                            `/admin/study-materials/${material.id}/edit`
                                                         )
                                                     }
                                                     className="px-3 py-1.5 text-sm bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200"

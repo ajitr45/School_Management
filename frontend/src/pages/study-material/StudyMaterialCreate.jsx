@@ -29,7 +29,7 @@ function StudyMaterialCreate () {
                 setError("");
 
                 const response = await api.get(
-                    "study-material/chapters/"
+                    "study-materials/chapters/"
                 );
 
                 const data = Array.isArray(response.data)
@@ -37,6 +37,7 @@ function StudyMaterialCreate () {
                     : response.data.results || [];
 
                 setChapters(data);
+
             } catch (error) {
                 console.log(
                     "CHAPTERS ERROR:",
@@ -47,12 +48,14 @@ function StudyMaterialCreate () {
                     error.response?.data?.detail ||
                     "Failed to load chapters."
                 );
+
             } finally {
                 setLoadingChapters(false);
             }
         };
 
         loadChapters();
+
     }, []);
 
     // =====================================================
@@ -123,11 +126,12 @@ function StudyMaterialCreate () {
             }
 
             await api.post(
-                "study-material/",
+                "study-materials/",
                 data
             );
 
-            navigate("/admin/study-material");
+            navigate("/admin/study-materials");
+
         } catch (error) {
             console.log(
                 "CREATE STUDY MATERIAL ERROR:",
@@ -147,6 +151,7 @@ function StudyMaterialCreate () {
                     "Failed to upload study material."
                 );
             }
+
         } finally {
             setLoading(false);
         }
@@ -307,7 +312,7 @@ function StudyMaterialCreate () {
                     <button
                         type="button"
                         onClick={() =>
-                            navigate("/admin/study-material")
+                            navigate("/admin/study-materials")
                         }
                         className="px-5 py-3 bg-gray-100 text-gray-700 rounded-lg font-semibold hover:bg-gray-200"
                     >
