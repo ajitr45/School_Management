@@ -11,9 +11,7 @@ function Sidebar () {
         navigate("/");
     };
 
-    // Logged-in user
     const user = JSON.parse(localStorage.getItem("user"));
-
     const role = user?.role;
 
     const adminMenuItems = [
@@ -114,23 +112,56 @@ function Sidebar () {
         },
     ];
 
+    const studentMenuItems = [
+        {
+            name: "Dashboard",
+            path: "/student",
+        },
+        {
+            name: "Profile",
+            path: "/student/profile",
+        },
+        {
+            name: "Attendance",
+            path: "/student/attendance",
+        },
+        {
+            name: "Homework",
+            path: "/student/homework",
+        },
+        {
+            name: "Study Material",
+            path: "/student/study-material",
+        },
+        {
+            name: "Timetable",
+            path: "/student/timetable",
+        },
+        {
+            name: "Exams",
+            path: "/student/exams",
+        },
+        {
+            name: "Notices",
+            path: "/student/notices",
+        },
+    ];
+
     const menuItems =
         role === "ADMIN"
             ? adminMenuItems
             : role === "TEACHER"
                 ? teacherMenuItems
-                : [];
+                : role === "STUDENT"
+                    ? studentMenuItems
+                    : [];
 
     return (
         <aside className="w-64 min-h-screen bg-blue-700 text-white p-5">
 
-            {/* Logo */}
-
             <h1 className="text-2xl font-bold mb-8">
                 School Management
             </h1>
-
-            {/* Navigation */}
 
             <nav className="space-y-2">
 
@@ -150,8 +181,6 @@ function Sidebar () {
                 ))}
 
             </nav>
-
-            {/* Logout */}
 
             <button
                 type="button"
